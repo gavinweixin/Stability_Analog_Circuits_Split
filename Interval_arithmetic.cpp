@@ -1,10 +1,9 @@
 // Interval arithmetic.cpp : Defines the entry point for the console application.
 //
 
-//#include "stdafx.h"
 #include <iostream>
 #include <vector>
-#include <cmath>
+//#include <cmath>
 #include "Interval_7D.h"
 using namespace std;
 
@@ -12,9 +11,9 @@ const double epsilon = 0.0001;
 double V;
 int counter = 0;
 
-/*inline double abs(double i) {
+inline double abs(double i) {
 	return i > 0 ? i : -i;
-}*/
+}
 
 inline double max(double m1, double m2) {
 	return m1 > m2 ? m1 : m2;
@@ -77,7 +76,6 @@ pair<Interval_7D, Interval_7D> CFBM ( Interval_7D& orig ) {
 void Judge ( Interval_7D& parent, vector<Interval_7D>& s, vector<Interval_7D>& us, vector<Interval_7D>& uc ) {
     pair<Interval_7D, Interval_7D> children;
 	if ( parent.F().lt_0() ) {
-//		cout << parent.F().get_inf() << endl;
 		s.push_back( parent );
 		return;
 	}
@@ -96,19 +94,6 @@ void Judge ( Interval_7D& parent, vector<Interval_7D>& s, vector<Interval_7D>& u
 	}
 }
 
-/*
-the Jacobi Matrix:
-J = 
-[                              R3,                              R3,                         R1 + R2,          0,                   0,               0,                                0 ]
-[ C1*R2*R3 + C2*R2*R3 - C2*R13*R4, C1*R1*R3 + C2*R1*R3 + C2*R13*R3, C1*R1*R2 + C2*R1*R2 + C2*R13*R2, -C2*R1*R13, C2*R2*R3 - C2*R1*R4,        R1*R2*R3, R1*R2*R3 - R1*R13*R4 + R13*R2*R3 ]
-[                 C1*C2*R13*R2*R3,                 C1*C2*R1*R13*R3,                 C1*C2*R1*R13*R2,          0,      C1*C2*R1*R2*R3, C2*R1*R13*R2*R3,                  C1*R1*R13*R2*R3 ]
-in the term of pi
-J =
-[                                             p[2],                                             p[2],                                      p[0] + p[1],               0,                               0,              0,                                                0 ]
-[ p[5]*p[1]*p[2] + p[6]*p[1]*p[2] - p[6]*p[4]*p[3], p[5]*p[0]*p[2] + p[6]*p[0]*p[2] + p[5]*p[4]*p[2], p[5]*p[0]*p[1] + p[6]*p[0]*p[1] + p[6]*p[4]*p[1], -p[6]*p[0]*p[4], p[6]*p[1]*p[2] - p[6]*p[0]*p[3], p[0]*p[1]*p[2], p[0]*p[1]*p[2] - p[0]*p[4]*p[3] + p[4]*p[1]*p[2] ] 
-[                         p[5]*p[6]*p[4]*p[1]*p[2],                         p[5]*p[6]*p[0]*p[4]*p[2],                         p[5]*p[6]*p[0]*p[4]*p[1],               0,        p[5]*p[6]*p[0]*p[1]*p[2], p[6]*p[0]*p[4]*p[1]*p2],                p[5]*p[0]*p[4]*p[1]*p[2] ]
-*/
-
 Interval_7D init() {
 	vector<Interval> temp_v;
 	Interval_7D temp;
@@ -119,27 +104,7 @@ Interval_7D init() {
     temp_v.push_back(Interval(245.4   *0.85, 245.4   *1.15));
     temp_v.push_back(Interval(90.87e-9*0.85, 90.87e-9*1.15));
     temp_v.push_back(Interval(90.07e-9*0.85, 90.07e-9*1.15));
-//	temp_v.push_back(Interval(2.498,3.765));
-//	temp_v.push_back(Interval(-1.874,6.984));
-//	temp_v.push_back(Interval(-6.831,-2.349));
-//	temp_v.push_back(Interval(5.874,6.294));
-//	temp_v.push_back(Interval(1.932,3.132));
-//	temp_v.push_back(Interval(-3.132,-1.132));
-//	temp_v.push_back(Interval(7.018,7.918));
-	/*temp_v.push_back(Interval(5.018,6.932));
-	temp_v.push_back(Interval(1.918,7.232));
-	temp_v.push_back(Interval(2.438,7.912));
-	temp_v.push_back(Interval(9.132,9.794));
-	temp_v.push_back(Interval(2.782,5.134));
-	temp_v.push_back(Interval(4.362,6.104));
-	temp_v.push_back(Interval(3.302,8.003));*/
-	/*temp_v.push_back(Interval(0.756,1.064));
-	temp_v.push_back(Interval(6.026,8.964));
-	temp_v.push_back(Interval(7.936,8.014));
-	temp_v.push_back(Interval(2.036,4.384));
-	temp_v.push_back(Interval(0.746,3.913));
-	temp_v.push_back(Interval(3.906,7.025));
-	temp_v.push_back(Interval(7.606,7.918));*/
+
 	temp = Interval_7D(temp_v);
 	return temp;
 }

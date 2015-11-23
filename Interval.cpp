@@ -1,4 +1,3 @@
-//#include "stdafx.h"
 #include "Interval.h"
 #include <iostream>
 

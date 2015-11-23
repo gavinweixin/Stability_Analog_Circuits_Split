@@ -1,4 +1,3 @@
-//#include "stdafx.h"
 #include "Interval_7D.h"
 #include <iostream>
 
@@ -23,23 +22,21 @@ double Interval_7D :: volume_cal() {
 }
 
 Interval Interval_7D :: F() {
-//	cout << "[" << (p[1]*p[2]).get_inf() << "," << (p[1]*p[2]).get_sup() << "]" << ",";
-//	cout << "[" << (p[0]*p[5]).get_inf() << "," << (p[0]*p[5]).get_sup() << "]" << ",";
-//	cout << "[" << (p[4]*p[6]).get_inf() << "," << (p[4]*p[6]).get_sup() << "]" << ",";
-//	cout << "[" << (p[0]*p[6]).get_inf() << "," << (p[0]*p[6]).get_sup() << "]" << ",";
-//	cout << "[" << (p[3]*p[4]).get_inf() << "," << (p[3]*p[4]).get_sup() << "]" << ",";
-//	cout << endl;
-//	cout << "[" << (p[0]*p[1]*p[2]*p[5]).get_inf() << "," << (p[0]*p[1]*p[2]*p[5]).get_sup() << "]" << ",";
-//	cout << "[" << (p[1]*p[2]*p[4]*p[6]).get_inf() << "," << (p[1]*p[2]*p[4]*p[6]).get_sup() << "]" << ",";
-//	cout << "[" << (p[0]*p[1]*p[2]*p[6]).get_inf() << "," << (p[0]*p[1]*p[2]*p[6]).get_sup() << "]" << ",";
-//	cout << "[" << (p[0]*p[3]*p[4]*p[6]).get_inf() << "," << (p[0]*p[3]*p[4]*p[6]).get_sup() << "]" << ",";
-//	cout << endl;
-//	cout << "[" << (p[0]*p[1]*p[2]*p[5] + p[1]*p[2]*p[4]*p[6]).get_inf() << "," << (p[0]*p[1]*p[2]*p[5] + p[1]*p[2]*p[4]*p[6]).get_sup() << "]" << ",";
-//	cout << "[" << (p[0]*p[1]*p[2]*p[6] - p[0]*p[3]*p[4]*p[6]).get_inf() << "," << (p[0]*p[1]*p[2]*p[6] - p[0]*p[3]*p[4]*p[6]).get_sup() << "]" << ",";
-//	cout << endl;
-	return (p[0]*p[1]*p[2]*p[5] + p[1]*p[2]*p[4]*p[6] + p[0]*p[1]*p[2]*p[6] - p[0]*p[3]*p[4]*p[6]);
+    return (p[0]*p[1]*p[2]*p[5] + p[1]*p[2]*p[4]*p[6] + p[0]*p[1]*p[2]*p[6] - p[0]*p[3]*p[4]*p[6]);
 }
 
+/*
+the Jacobi Matrix:
+J =
+[                              R3,                              R3,                         R1 + R2,          0,                   0,               0,                                0 ]
+[ C1*R2*R3 + C2*R2*R3 - C2*R13*R4, C1*R1*R3 + C2*R1*R3 + C2*R13*R3, C1*R1*R2 + C2*R1*R2 + C2*R13*R2, -C2*R1*R13, C2*R2*R3 - C2*R1*R4,        R1*R2*R3, R1*R2*R3 - R1*R13*R4 + R13*R2*R3 ]
+[                 C1*C2*R13*R2*R3,                 C1*C2*R1*R13*R3,                 C1*C2*R1*R13*R2,          0,      C1*C2*R1*R2*R3, C2*R1*R13*R2*R3,                  C1*R1*R13*R2*R3 ]
+in the term of pi
+J =
+[                                             p[2],                                             p[2],                                      p[0] + p[1],               0,                               0,              0,                                                0 ]
+[ p[5]*p[1]*p[2] + p[6]*p[1]*p[2] - p[6]*p[4]*p[3], p[5]*p[0]*p[2] + p[6]*p[0]*p[2] + p[6]*p[4]*p[2], p[5]*p[0]*p[1] + p[6]*p[0]*p[1] + p[6]*p[4]*p[1], -p[6]*p[0]*p[4], p[6]*p[1]*p[2] - p[6]*p[0]*p[3], p[0]*p[1]*p[2], p[0]*p[1]*p[2] - p[0]*p[4]*p[3] + p[4]*p[1]*p[2] ]
+[                         p[5]*p[6]*p[4]*p[1]*p[2],                         p[5]*p[6]*p[0]*p[4]*p[2],                         p[5]*p[6]*p[0]*p[4]*p[1],               0,        p[5]*p[6]*p[0]*p[1]*p[2], p[6]*p[0]*p[4]*p[1]*p2],                p[5]*p[0]*p[4]*p[1]*p[2] ]
+*/
 vector<Interval> Interval_7D :: J2_cal() {
 	vector<Interval> temp;
 	Interval temp_i;
@@ -50,8 +47,6 @@ vector<Interval> Interval_7D :: J2_cal() {
 	temp_i = p[5]*p[0]*p[1] + p[6]*p[0]*p[1] + p[6]*p[4]*p[1];
 	temp.push_back(temp_i);
     temp_i = Interval(0,0) - p[6]*p[0]*p[4];
-//	temp_i.set_inf(-temp_i.get_inf());
-//	temp_i.set_sup(-temp_i.get_sup());
 	temp.push_back(temp_i);
 	temp_i = p[6]*p[1]*p[2] - p[6]*p[0]*p[3];
 	temp.push_back(temp_i);
@@ -62,7 +57,6 @@ vector<Interval> Interval_7D :: J2_cal() {
 
 	return temp;
 }
-
 
 Interval& Interval_7D :: get_pi( int i ) {
 	return p[i];

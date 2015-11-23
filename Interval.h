@@ -1,4 +1,3 @@
-//#include "stdafx.h"
 #ifndef _INTERVAL_H_
 #define _INTERVAL_H_
 
