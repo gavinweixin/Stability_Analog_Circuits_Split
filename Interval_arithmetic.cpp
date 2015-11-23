@@ -1,15 +1,11 @@
-// Interval arithmetic.cpp : Defines the entry point for the console application.
-//
-
 #include <iostream>
+#include <iomanip>
 #include <vector>
-//#include <cmath>
 #include "Interval_7D.h"
 using namespace std;
 
 const double epsilon = 0.0001;
 double V;
-int counter = 0;
 
 inline double abs(double i) {
 	return i > 0 ? i : -i;
@@ -44,8 +40,7 @@ pair<Interval_7D, Interval_7D> Jacobi ( Interval_7D& orig ) {
 			max_df = d;
 			max_j = i;
 		}
-	}
-	counter++;
+    }
 	return Bisect_j(orig,max_j);
 }
 
@@ -69,7 +64,6 @@ pair<Interval_7D, Interval_7D> CFBM ( Interval_7D& orig ) {
             min_i = i;
         }
     }
-    counter++;
     return Bisect_j(orig,min_i);
 }
 
@@ -117,7 +111,6 @@ int main()
 	Interval_7D p;
 	p = init();
     V = p.volume_cal();
-    cout << V << endl;
 	Judge(p,stable,unstable,uncertain);
 //	cout << "stable:" << endl;
 //	for ( vector<Interval_7D>::iterator ivec = stable.begin(); ivec != stable.end(); ++ ivec ) {
@@ -137,14 +130,17 @@ int main()
 //			cout << "[" << (*ivec).get_pi(i).get_inf() << "," << (*ivec).get_pi(i).get_sup() << "]" << "\t";
 //		cout << endl;
 //	}
-	cout << counter << endl;
+
+    cout << "#Cube:\t";
 	cout << stable.size() << "\t" << unstable.size() << "\t" << uncertain.size() << endl;
+
     double vol_stable=0, vol_unstable=0, vol_uncertain=0;
-    for (size_t i=0; i<stable.size(); i++) vol_stable += stable[i].volume_cal();
-    for (size_t i=0; i<unstable.size(); i++) vol_unstable += unstable[i].volume_cal();
+    for (size_t i=0; i<stable.size();    i++) vol_stable    += stable[i].volume_cal();
+    for (size_t i=0; i<unstable.size();  i++) vol_unstable  += unstable[i].volume_cal();
     for (size_t i=0; i<uncertain.size(); i++) vol_uncertain += uncertain[i].volume_cal();
-    cout << vol_stable << "\t" << vol_unstable << "\t" << vol_uncertain << endl;
-    cout << vol_stable/V << "\t" << vol_unstable/V << "\t" << vol_uncertain/V << endl;
+
+    cout << "Vol%:\t";
+    cout << setprecision(4);
+    cout << vol_stable/V*100 << "%\t" << vol_unstable/V*100 << "%\t" << vol_uncertain/V*100 << "%" << endl;
 	return 0;
 }
-
