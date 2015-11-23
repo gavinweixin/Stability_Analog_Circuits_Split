@@ -20,7 +20,7 @@ public:
 	Interval_7D b_sub_bc ();
 private:
 	vector<Interval> p;
-	double volume;
+    double volume;//to be removed
 };
 
 #endif
