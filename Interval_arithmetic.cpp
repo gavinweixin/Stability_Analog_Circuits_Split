@@ -2,6 +2,12 @@
 #include <iomanip>
 #include <vector>
 #include "Interval_7D.h"
+
+#define SplitMethod CFBM
+#define SplitMethodStr "CFBM"
+#define Circuit F2_1
+#define CircuitStr "F2_1"
+
 using namespace std;
 
 const double epsilon = 0.0001;
@@ -33,7 +39,7 @@ pair<Interval_7D, Interval_7D> Jacobi ( Interval_7D& orig ) {
 	vector<Interval> df2;
 	Interval_7D b_subt_bc = orig.b_sub_bc();
 	df2 = orig.J2_cal();
-	for ( int i = 0; i != 7; ++ i ) {
+    for ( int i = 0; i != PARM_SIZE_F2_1; ++ i ) {
 		df2[i] = df2[i] * b_subt_bc.get_pi(i);
 		d = max( abs(df2[i].get_inf()), abs(df2[i].get_sup()) );
 		if ( d > max_df ) {
@@ -46,18 +52,35 @@ pair<Interval_7D, Interval_7D> Jacobi ( Interval_7D& orig ) {
 
 pair<Interval_7D, Interval_7D> CFBM ( Interval_7D& orig ) {
     //RouthTable here has only one entry
-    double tmp, min_v=2*1;
+    double tmp, min_v=2*RT_SIZE_F2_1;
     int min_i=0;
-    double wid_RouthT = orig.F().width_cal();
-    pair<Interval_7D, Interval_7D> children;
+    bool filter[RT_SIZE_F2_1] = {};
+    double wid_RT[RT_SIZE_F2_1];
 
-    for ( int i = 0; i != 7; ++ i )
+    Interval* RT = orig.RouthTable();
+    for (int i=0; i<RT_SIZE_F2_1; i++)
+    {
+        wid_RT[i] = RT[i].width_cal();
+        if (RT[i].lt_0()) filter[i] = true;
+    }
+    delete[] RT;
+
+    pair<Interval_7D, Interval_7D> children;
+    Interval *RT_left, *RT_right;
+    for ( int i = 0; i != PARM_SIZE_F2_1; ++ i )
     {
         children = Bisect_j(orig,i);
-        Interval RT = children.first.F();
-        tmp = RT.width_cal()/wid_RouthT;
-        RT = children.second.F();
-        tmp += RT.width_cal()/wid_RouthT;
+        RT_left = children.first.RouthTable();
+        RT_right = children.second.RouthTable();
+        tmp = 0;
+        for (int j=0; j<RT_SIZE_F2_1; j++)
+            if (!filter[j])
+            {
+                tmp += RT_left[j].width_cal()  / wid_RT[j];
+                tmp += RT_right[j].width_cal() / wid_RT[j];
+            }
+        delete[] RT_left;
+        delete[] RT_right;
         if (tmp <= min_v)
         {
             min_v = tmp;
@@ -69,20 +92,24 @@ pair<Interval_7D, Interval_7D> CFBM ( Interval_7D& orig ) {
 
 void Judge ( Interval_7D& parent, vector<Interval_7D>& s, vector<Interval_7D>& us, vector<Interval_7D>& uc ) {
     pair<Interval_7D, Interval_7D> children;
-	if ( parent.F().lt_0() ) {
+    int state = parent.judge();
+    if (state == 1)
+    {
 		s.push_back( parent );
 		return;
 	}
-	else if ( parent.F().st_0() ) {
+    else if (state == -1)
+    {
 		us.push_back( parent );
 		return;
 	}
-	else if ( parent.volume_cal() / V < epsilon ) {
+    else if ( parent.volume_cal() / V < epsilon )
+    {
 		uc.push_back( parent );
 		return;
 	}
 	else {
-        children = CFBM( parent );
+        children = SplitMethod( parent );
 		Judge(children.first,s,us,uc);
 		Judge(children.second,s,us,uc);
 	}
@@ -111,6 +138,8 @@ int main()
 	Interval_7D p;
 	p = init();
     V = p.volume_cal();
+    cout << "Circuit:\t" << CircuitStr << endl;
+    cout << "Split Method:\t" << SplitMethodStr << endl;
 	Judge(p,stable,unstable,uncertain);
 //	cout << "stable:" << endl;
 //	for ( vector<Interval_7D>::iterator ivec = stable.begin(); ivec != stable.end(); ++ ivec ) {
@@ -131,7 +160,7 @@ int main()
 //		cout << endl;
 //	}
 
-    cout << "#Cube:\t";
+    cout << "#Cube\t";
 	cout << stable.size() << "\t" << unstable.size() << "\t" << uncertain.size() << endl;
 
     double vol_stable=0, vol_unstable=0, vol_uncertain=0;
@@ -139,7 +168,7 @@ int main()
     for (size_t i=0; i<unstable.size();  i++) vol_unstable  += unstable[i].volume_cal();
     for (size_t i=0; i<uncertain.size(); i++) vol_uncertain += uncertain[i].volume_cal();
 
-    cout << "Vol%:\t";
+    cout << "Vol%\t";
     cout << setprecision(4);
     cout << vol_stable/V*100 << "%\t" << vol_unstable/V*100 << "%\t" << vol_uncertain/V*100 << "%" << endl;
 	return 0;

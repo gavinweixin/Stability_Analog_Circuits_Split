@@ -21,22 +21,20 @@ double Interval_7D :: volume_cal() {
 	return volume;
 }
 
-Interval Interval_7D :: F() {
-    return (p[0]*p[1]*p[2]*p[5] + p[1]*p[2]*p[4]*p[6] + p[0]*p[1]*p[2]*p[6] - p[0]*p[3]*p[4]*p[6]);
+Interval* Interval_7D :: RouthTable(double d) {
+    Interval coef[RT_SIZE_F2_1];
+    coef[0] = p[1]*p[2]+p[0]*p[2];
+    coef[1] = p[5]*p[0]*p[1]*p[2] + p[6]*p[4]*p[1]*p[2] + p[6]*p[0]*p[1]*p[2] - p[6]*p[0]*p[4]*p[3];
+    coef[2] = p[6]*p[5]*p[0]*p[4]*p[1]*p[2];
+
+    Interval* RT = new Interval[RT_SIZE_F2_1];
+    RT[0] = coef[2]*d*d-coef[1]*d+coef[0];
+    RT[1] = coef[1]-coef[2]*2*d;
+    RT[2] = coef[2];
+
+    return RT;
 }
 
-/*
-the Jacobi Matrix:
-J =
-[                              R3,                              R3,                         R1 + R2,          0,                   0,               0,                                0 ]
-[ C1*R2*R3 + C2*R2*R3 - C2*R13*R4, C1*R1*R3 + C2*R1*R3 + C2*R13*R3, C1*R1*R2 + C2*R1*R2 + C2*R13*R2, -C2*R1*R13, C2*R2*R3 - C2*R1*R4,        R1*R2*R3, R1*R2*R3 - R1*R13*R4 + R13*R2*R3 ]
-[                 C1*C2*R13*R2*R3,                 C1*C2*R1*R13*R3,                 C1*C2*R1*R13*R2,          0,      C1*C2*R1*R2*R3, C2*R1*R13*R2*R3,                  C1*R1*R13*R2*R3 ]
-in the term of pi
-J =
-[                                             p[2],                                             p[2],                                      p[0] + p[1],               0,                               0,              0,                                                0 ]
-[ p[5]*p[1]*p[2] + p[6]*p[1]*p[2] - p[6]*p[4]*p[3], p[5]*p[0]*p[2] + p[6]*p[0]*p[2] + p[6]*p[4]*p[2], p[5]*p[0]*p[1] + p[6]*p[0]*p[1] + p[6]*p[4]*p[1], -p[6]*p[0]*p[4], p[6]*p[1]*p[2] - p[6]*p[0]*p[3], p[0]*p[1]*p[2], p[0]*p[1]*p[2] - p[0]*p[4]*p[3] + p[4]*p[1]*p[2] ]
-[                         p[5]*p[6]*p[4]*p[1]*p[2],                         p[5]*p[6]*p[0]*p[4]*p[2],                         p[5]*p[6]*p[0]*p[4]*p[1],               0,        p[5]*p[6]*p[0]*p[1]*p[2], p[6]*p[0]*p[4]*p[1]*p2],                p[5]*p[0]*p[4]*p[1]*p[2] ]
-*/
 vector<Interval> Interval_7D :: J2_cal() {
 	vector<Interval> temp;
 	Interval temp_i;
@@ -77,4 +75,19 @@ Interval_7D Interval_7D :: b_sub_bc() {
 	temp = Interval_7D(temp_v);
 
 	return temp;
+}
+
+int Interval_7D::judge()
+{
+    Interval *RT = RouthTable();
+    int positive=0, negtive=0, straddle=0;
+    for (int i=0; i<RT_SIZE_F2_1; i++)
+    {
+        if (RT[i].get_inf()>0) positive++;
+        else if (RT[i].get_sup()<0) negtive++;
+        else straddle++;
+    }
+    if (positive==RT_SIZE_F2_1) return 1;
+    else if (negtive==RT_SIZE_F2_1) return -1;
+    else return 0;
 }

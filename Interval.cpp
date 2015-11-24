@@ -118,14 +118,32 @@ Interval operator + (const Interval& lhs, const Interval& rhs) {
 	return ret;
 }
 
+Interval operator + (const Interval& lhs, const double& rhs) {
+    Interval ret(lhs);
+    ret += Interval(rhs, rhs);
+    return ret;
+}
+
 Interval operator - (const Interval& lhs, const Interval& rhs) {
 	Interval ret(lhs);
 	ret -= rhs;
 	return ret;
 }
 
+Interval operator - (const Interval& lhs, const double& rhs) {
+    Interval ret(lhs);
+    ret -= Interval(rhs, rhs);
+    return ret;
+}
+
 Interval operator * (const Interval& lhs, const Interval& rhs) {
 	Interval ret(lhs);
 	ret *= rhs;
 	return ret;
+}
+
+Interval operator * (const Interval& lhs, const double& rhs) {
+    Interval ret(lhs);
+    ret *= Interval(rhs, rhs);
+    return ret;
 }

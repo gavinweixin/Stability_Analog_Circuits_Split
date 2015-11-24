@@ -25,7 +25,10 @@ private:
 };
 
 Interval operator + (const Interval& lhs, const Interval& rhs);
+Interval operator + (const Interval& lhs, const double& rhs);
 Interval operator - (const Interval& lhs, const Interval& rhs);
+Interval operator - (const Interval& lhs, const double& rhs);
 Interval operator * (const Interval& lhs, const Interval& rhs);
+Interval operator * (const Interval& lhs, const double& rhs);
 
 #endif
