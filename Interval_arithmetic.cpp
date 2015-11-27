@@ -1,6 +1,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <string>
 #include "Interval_7D.h"
 
 #define SplitMethod CFBM
@@ -28,8 +29,8 @@ pair<Interval_7D, Interval_7D> Bisect_j (Interval_7D& orig, int j)
     Interval_7D temp1(orig), temp2(orig);
     double mid_j;
     mid_j = (orig.get_pi(j).get_inf() + orig.get_pi(j).get_sup()) / 2;
-    temp1.get_pi(j).set_sup(mid_j);
-    temp2.get_pi(j).set_inf(mid_j);
+    temp1.set_pi(j, Interval(temp1.get_pi(j).get_inf(), mid_j));
+    temp2.set_pi(j, Interval(mid_j, temp2.get_pi(j).get_sup()));
     pair<Interval_7D, Interval_7D> temp;
     temp = make_pair(temp1, temp2);
     return temp;
@@ -43,7 +44,7 @@ pair<Interval_7D, Interval_7D> Jacobi (Interval_7D& orig)
     vector<Interval> df2;
     Interval_7D b_subt_bc = orig.b_sub_bc();
     df2 = orig.J2_cal();
-    for (int i = 0; i != PARM_SIZE_F2_1; ++ i)
+    for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
     {
         df2[i] = df2[i] * b_subt_bc.get_pi(i);
         d = max(abs(df2[i].get_inf()), abs(df2[i].get_sup()));
@@ -56,16 +57,27 @@ pair<Interval_7D, Interval_7D> Jacobi (Interval_7D& orig)
     return Bisect_j(orig,max_j);
 }
 
+double* findZeroF2_1I(const Interval_7D &ic);
+
 pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
 {
     //RouthTable here has only one entry
-    double tmp, min_v=2*RT_SIZE_F2_1;
+    double tmp, min_v=2*SIZE_RT_F2_1;
     int min_i=0;
-    bool filter[RT_SIZE_F2_1] = {};
-    double wid_RT[RT_SIZE_F2_1];
+    bool filter[SIZE_RT_F2_1] = {};
+    double wid_RT[SIZE_RT_F2_1];
+    bool zeroFound = false;
+
+    double *pos = findZeroF2_1I(orig);
+    for (int i=0; i<SIZE_PARM_F2_1; i++)
+        if (pos[i]!=-1)
+        {
+            zeroFound = true;
+        }
+//    delete[] pos;
 
     Interval* RT = orig.RouthTable();
-    for (int i=0; i<RT_SIZE_F2_1; i++)
+    for (int i=0; i<SIZE_RT_F2_1; i++)
     {
         wid_RT[i] = RT[i].width_cal();
         if (RT[i].lt_0()) filter[i] = true;
@@ -74,13 +86,13 @@ pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
 
     pair<Interval_7D, Interval_7D> children;
     Interval *RT_left, *RT_right;
-    for (int i = 0; i != PARM_SIZE_F2_1; ++ i)
+    for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
     {
         children = Bisect_j(orig,i);
         RT_left = children.first.RouthTable();
         RT_right = children.second.RouthTable();
         tmp = 0;
-        for (int j=0; j<RT_SIZE_F2_1; j++)
+        for (int j=0; j<SIZE_RT_F2_1; j++)
             if (!filter[j])
             {
                 tmp += RT_left[j].width_cal()  / wid_RT[j];

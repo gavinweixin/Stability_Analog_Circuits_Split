@@ -5,18 +5,20 @@ class Interval
 {
 public:
     Interval();
+    Interval(const double& value);
     Interval(const double& low, const double& upper);
     Interval(const Interval& orig);
     Interval& operator = (const Interval& i);
     Interval& operator += (const Interval& i);
     Interval& operator -= (const Interval& i);
     Interval& operator *= (const Interval& i);
-    bool lt_0 ();
-    bool st_0 ();
-    bool uncertain();
-    double width_cal();
-    double get_inf();
-    double get_sup();
+    bool lt_0 () const;
+    bool st_0 () const;
+    bool uncertain() const;
+    double width_cal() const;
+    double get_inf() const;
+    double get_sup() const;
+    double get_mid() const;
     void set_inf(const double& low);
     void set_sup(const double& upper);
     ~Interval();

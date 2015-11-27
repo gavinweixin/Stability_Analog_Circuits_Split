@@ -3,6 +3,8 @@
 
 Interval :: Interval () : inf(0), sup(0) { }
 
+Interval :: Interval (const double& value) : inf(value), sup(value) { }
+
 Interval :: Interval(const double& low, const double& upper) : inf(low), sup(upper) { }
 
 Interval :: Interval (const Interval& orig) : inf(orig.inf), sup(orig.sup) { }
@@ -95,34 +97,39 @@ Interval& Interval :: operator *= (const Interval& i)
 }
 
 
-bool Interval :: lt_0 ()
+bool Interval :: lt_0 () const
 {
     return (inf>0);
 }
 
-bool Interval :: st_0 ()
+bool Interval :: st_0 () const
 {
     return (sup<0);
 }
 
-bool Interval :: uncertain()
+bool Interval :: uncertain() const
 {
     return (inf<=0 && sup>=0);
 }
 
-double Interval :: width_cal()
+double Interval :: width_cal() const
 {
     return (sup-inf);
 }
 
-double Interval :: get_inf()
+double Interval :: get_inf() const
 {
     return inf;
 }
 
-double Interval :: get_sup()
+double Interval :: get_sup() const
 {
     return sup;
+}
+
+double Interval :: get_mid() const
+{
+    return ((inf+sup)/2);
 }
 
 void Interval :: set_inf(const double& low)
