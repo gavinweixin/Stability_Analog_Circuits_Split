@@ -1,18 +1,18 @@
 #include <iostream>
+#include <fstream>
 #include <iomanip>
 #include <vector>
 #include <string>
 #include "Interval_7D.h"
 
-#define SplitMethod CFBM
-#define SplitMethodStr "CFBM"
-#define Circuit F2_1
-#define CircuitStr "F2_1"
+#define SplitMethod_CFBM
+#define Circuit_F2_1
 
 using namespace std;
 
 const double epsilon = 0.0001;
 double V;
+ofstream fout("axis");
 
 inline double abs(double i)
 {
@@ -24,11 +24,14 @@ inline double max(double m1, double m2)
     return m1 > m2 ? m1 : m2;
 }
 
-pair<Interval_7D, Interval_7D> Bisect_j (Interval_7D& orig, int j)
+pair<Interval_7D, Interval_7D> Bisect_j (Interval_7D& orig, int j, double pos)
 {
     Interval_7D temp1(orig), temp2(orig);
     double mid_j;
-    mid_j = (orig.get_pi(j).get_inf() + orig.get_pi(j).get_sup()) / 2;
+    if (pos == -1)
+        mid_j = (orig.get_pi(j).get_inf() + orig.get_pi(j).get_sup()) / 2;
+    else
+        mid_j = pos;
     temp1.set_pi(j, Interval(temp1.get_pi(j).get_inf(), mid_j));
     temp2.set_pi(j, Interval(mid_j, temp2.get_pi(j).get_sup()));
     pair<Interval_7D, Interval_7D> temp;
@@ -54,7 +57,7 @@ pair<Interval_7D, Interval_7D> Jacobi (Interval_7D& orig)
             max_j = i;
         }
     }
-    return Bisect_j(orig,max_j);
+    return Bisect_j(orig,max_j,-1);
 }
 
 double* findZeroF2_1I(const Interval_7D &ic);
@@ -62,7 +65,7 @@ double* findZeroF2_1I(const Interval_7D &ic);
 pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
 {
     //RouthTable here has only one entry
-    double tmp, min_v=2*SIZE_RT_F2_1;
+    double tmp, min_pos, min_v=2*SIZE_RT_F2_1;
     int min_i=0;
     bool filter[SIZE_RT_F2_1] = {};
     double wid_RT[SIZE_RT_F2_1];
@@ -74,7 +77,6 @@ pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
         {
             zeroFound = true;
         }
-//    delete[] pos;
 
     Interval* RT = orig.RouthTable();
     for (int i=0; i<SIZE_RT_F2_1; i++)
@@ -88,7 +90,8 @@ pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
     Interval *RT_left, *RT_right;
     for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
     {
-        children = Bisect_j(orig,i);
+        if (zeroFound && pos[i]==-1) continue;
+        children = Bisect_j(orig, i, pos[i]);
         RT_left = children.first.RouthTable();
         RT_right = children.second.RouthTable();
         tmp = 0;
@@ -100,13 +103,16 @@ pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
             }
         delete[] RT_left;
         delete[] RT_right;
-        if (tmp <= min_v)
+        if (tmp < min_v)
         {
             min_v = tmp;
             min_i = i;
+            min_pos = pos[i];
         }
     }
-    return Bisect_j(orig,min_i);
+    delete[] pos;
+    fout << min_i+1 << endl;
+    return Bisect_j(orig,min_i,min_pos);
 }
 
 void Judge (Interval_7D& parent, vector<Interval_7D>& s, vector<Interval_7D>& us, vector<Interval_7D>& uc)
@@ -128,8 +134,13 @@ void Judge (Interval_7D& parent, vector<Interval_7D>& s, vector<Interval_7D>& us
         uc.push_back(parent);
         return;
     }
-    else {
-        children = SplitMethod(parent);
+    else
+    {
+        #ifdef SplitMethod_CFBM
+        children = CFBM(parent);
+        #elif defined SplitMethod_Jacobi
+        children = Jacobi(parent);
+        #endif
         Judge(children.first,s,us,uc);
         Judge(children.second,s,us,uc);
     }
@@ -178,14 +189,22 @@ void cubePrint(vector<Interval_7D> &s, vector<Interval_7D> &us, vector<Interval_
 
 int main()
 {
+    #ifdef SplitMethod_CFBM
+    cout << "Split Method:\t" << "CFBM" << endl;
+    #elif defined SplitMethod_Jacobi
+    cout << "Split Method:\t" << "Jacobi" << endl;
+    #endif
+
+    #ifdef Circuit_F2_1
+    cout << "Circuit:\t\t" << "F2_1" << endl;
+    #endif
+
     vector<Interval_7D> stable;
     vector<Interval_7D> unstable;
     vector<Interval_7D> uncertain;
     Interval_7D p = init();
 
     V = p.volume_cal();
-    cout << "Circuit:\t\t" << CircuitStr << endl;
-    cout << "Split Method:\t" << SplitMethodStr << endl;
     Judge(p,stable,unstable,uncertain);
 
     cout << "#Cube\t" << stable.size() << "\t" << unstable.size() << "\t" << uncertain.size() << endl;
@@ -196,7 +215,8 @@ int main()
     for (size_t i=0; i<uncertain.size(); i++) vol_uncertain += uncertain[i].volume_cal();
 
     cout << "Vol%\t";
-    cout << setprecision(4);
+    cout << setprecision(6);
     cout << vol_stable/V*100 << "%\t" << vol_unstable/V*100 << "%\t" << vol_uncertain/V*100 << "%" << endl;
+    fout.close();
     return 0;
 }

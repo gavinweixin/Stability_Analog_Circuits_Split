@@ -1,7 +1,7 @@
 #include <Interval_7D.h>
 #include <cmath>
 
-const double eps = 1e-12;
+#define findZeroAdded
 
 double newton(Interval_7D ic, int num, bool isInf, bool &found)
 {
@@ -10,7 +10,7 @@ double newton(Interval_7D ic, int num, bool isInf, bool &found)
     double itr;
 
     ic.set_pi(num, Interval(ic.get_pi(num).get_mid()));
-//    eps = ic.get_pi(num).get_mid()/100;
+    double eps = ic.get_pi(num).get_mid()/10000;  //set the accuracy
     found = false;
     for (int i=0; i<MAXITEA; i++)
     {
@@ -32,8 +32,9 @@ double newton(Interval_7D ic, int num, bool isInf, bool &found)
 }
 
 //terminals of interval not included
-bool insideInterval(const Interval &intval, const int &value)
+bool insideInterval(const Interval &intval, const double &value)
 {
+    double eps = intval.get_mid()/10000;
     return ((value-intval.get_inf()>eps) && (intval.get_sup()-value>eps));
 }
 
@@ -44,6 +45,7 @@ double* findZeroF2_1I(const Interval_7D &ic)
 
     for (int i=0; i<SIZE_PARM_F2_1; i++)
     {
+        #ifdef findZeroAdded
         pos[i] = newton(ic, i, true, found);
         if (!found || !insideInterval(ic.get_pi(i), pos[i]))
         {
@@ -51,6 +53,9 @@ double* findZeroF2_1I(const Interval_7D &ic)
             if (!found || !insideInterval(ic.get_pi(i), pos[i])) pos[i] = -1;
 
         }
+        #else
+        pos[i] = -1;
+        #endif
     }
     return pos;
 }

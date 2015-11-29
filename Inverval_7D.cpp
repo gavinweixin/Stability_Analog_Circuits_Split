@@ -93,8 +93,8 @@ int Interval_7D::judge() const
     int positive=0, negtive=0, straddle=0;
     for (int i=0; i<SIZE_RT_F2_1; i++)
     {
-        if (RT[i].get_inf()>0) positive++;
-        else if (RT[i].get_sup()<0) negtive++;
+        if (RT[i].get_inf()>=0) positive++;
+        else if (RT[i].get_sup()<=0) negtive++;
         else straddle++;
     }
     if (positive==SIZE_RT_F2_1) return 1;
