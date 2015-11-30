@@ -73,7 +73,10 @@ pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
     double wid_RT[SIZE_RT_F2_1];
     bool zeroFound = false;
 
-    vector<double> pos = findZeroF2_1I(orig);
+    vector<double> pos(SIZE_PARM_F2_1, -1);
+    #ifdef findZeroAdded
+    pos = findZeroF2_1I(orig);
+    #endif
     for (int i=0; i<SIZE_PARM_F2_1; i++)
         if (pos[i]!=-1)
         {

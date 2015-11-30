@@ -44,17 +44,12 @@ vector<double> findZeroF2_1I(const Interval_7D &ic)
 
     for (int i=0; i<SIZE_PARM_F2_1; i++)
     {
-        #ifdef findZeroAdded
         pos[i] = newton(ic, i, true, found);
         if (!found || !insideInterval(ic.get_pi(i), pos[i]))
         {
             pos[i] = newton(ic, i, false, found);
             if (!found || !insideInterval(ic.get_pi(i), pos[i])) pos[i] = -1;
-
         }
-        #else
-        pos[i] = -1;
-        #endif
     }
     return pos;
 }
