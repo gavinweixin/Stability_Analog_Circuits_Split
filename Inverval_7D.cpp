@@ -1,5 +1,6 @@
 #include "Interval_7D.h"
 #include <iostream>
+#include <cmath>
 
 Interval_7D :: Interval_7D() { }
 
@@ -21,39 +22,56 @@ double Interval_7D :: volume_cal() const
 
 }
 
-Interval* Interval_7D :: RouthTable(double d) const
+vector<Interval> Interval_7D :: coef_cal(double d) const
 {
-    Interval coef[SIZE_RT_F2_1];
-    coef[0] = p[1]*p[2]+p[0]*p[2];
-    coef[1] = p[5]*p[0]*p[1]*p[2] + p[6]*p[4]*p[1]*p[2] + p[6]*p[0]*p[1]*p[2] - p[6]*p[0]*p[4]*p[3];
-    coef[2] = p[6]*p[5]*p[0]*p[4]*p[1]*p[2];
+    Interval coef_origin[SIZE_RT_F2_1];
+    coef_origin[0] = p[1]*p[2]+p[0]*p[2];
+    coef_origin[1] = p[5]*p[0]*p[1]*p[2] + p[6]*p[4]*p[1]*p[2] + p[6]*p[0]*p[1]*p[2] - p[6]*p[0]*p[4]*p[3];
+    coef_origin[2] = p[6]*p[5]*p[0]*p[4]*p[1]*p[2];
 
-    Interval* RT = new Interval[SIZE_RT_F2_1];
-    RT[0] = coef[2]*d*d-coef[1]*d+coef[0];
-    RT[1] = coef[1]-coef[2]*2*d;
-    RT[2] = coef[2];
+    vector<Interval> coef;
+    coef.resize(SIZE_RT_F2_1);
+    coef[0] = coef_origin[2]*d*d-coef_origin[1]*d+coef_origin[0];
+    coef[1] = coef_origin[1]-coef_origin[2]*2*d;
+    coef[2] = coef_origin[2];
 
-    return RT;
+    return coef;
 }
 
-vector<Interval> Interval_7D :: J2_cal() const
+vector<Interval> Interval_7D :: RouthTable(double d) const
 {
-    vector<Interval> temp;
-    Interval temp_i;
-    temp_i = p[5]*p[1]*p[2] + p[6]*p[1]*p[2] - p[6]*p[4]*p[3];
-    temp.push_back(temp_i);
-    temp_i = p[5]*p[0]*p[2] + p[6]*p[0]*p[2] + p[6]*p[4]*p[2];
-    temp.push_back(temp_i);
-    temp_i = p[5]*p[0]*p[1] + p[6]*p[0]*p[1] + p[6]*p[4]*p[1];
-    temp.push_back(temp_i);
-    temp_i = Interval(0,0) - p[6]*p[0]*p[4];
-    temp.push_back(temp_i);
-    temp_i = p[6]*p[1]*p[2] - p[6]*p[0]*p[3];
-    temp.push_back(temp_i);
-    temp_i = p[0]*p[1]*p[2];
-    temp.push_back(temp_i);
-    temp_i = p[0]*p[1]*p[2] - p[0]*p[4]*p[3] + p[4]*p[1]*p[2];
-    temp.push_back(temp_i);
+    return coef_cal(d);
+}
+
+vector< vector<Interval> > Interval_7D :: Jacobi_cal(double d) const
+{
+    vector< vector<Interval> > temp;
+    temp.resize(SIZE_RT_F2_1);
+    for (int i=0; i<SIZE_RT_F2_1; i++) temp[i].resize(SIZE_PARM_F2_1);
+
+    temp[0][0] = p[5]*p[6]*p[1]*p[2]*p[4]*d*d+(p[5]*p[1]*p[2]+p[6]*p[1]*p[2]-p[6]*p[3]*p[4])*d+p[2];
+    temp[0][1] = p[5]*p[6]*p[0]*p[2]*p[4]*d*d+(p[5]*p[0]*p[2]+p[6]*p[0]*p[2]+p[6]*p[2]*p[4])*d+p[2];
+    temp[0][2] = p[5]*p[6]*p[0]*p[1]*p[4]*d*d+(p[5]*p[0]*p[1]+p[6]*p[0]*p[1]+p[6]*p[1]*p[4])*d+p[0]+p[1];
+    temp[0][3] = Interval(0,0)-p[6]*p[0]*p[4]*d;
+    temp[0][4] = p[5]*p[6]*p[0]*p[1]*p[2]*d*d+(p[6]*p[1]*p[2]-p[6]*p[0]*p[3])*d;
+    temp[0][5] = p[6]*p[0]*p[1]*p[2]*p[4]*d*d+p[0]*p[1]*p[2]*d;
+    temp[0][6] = p[5]*p[0]*p[1]*p[2]*p[4]*d*d+(p[0]*p[1]*p[2]-p[0]*p[3]*p[4]+p[1]*p[2]*p[4])*d;
+
+    temp[1][0] = p[5]*p[1]*p[2]+p[6]*p[1]*p[2]-p[6]*p[3]*p[4]+2*p[5]*p[6]*p[1]*p[2]*p[4]*d;
+    temp[1][1] = p[5]*p[0]*p[2]+p[6]*p[0]*p[2]+p[6]*p[2]*p[4]+2*p[5]*p[6]*p[0]*p[2]*p[4]*d;
+    temp[1][2] = p[5]*p[0]*p[1]+p[6]*p[0]*p[1]+p[6]*p[1]*p[4]+2*p[5]*p[6]*p[0]*p[1]*p[4]*d;
+    temp[1][3] = Interval(0,0)-p[6]*p[0]*p[4];
+    temp[1][4] = p[6]*p[1]*p[2]-p[6]*p[0]*p[3]+2*p[5]*p[6]*p[0]*p[1]*p[2]*d;
+    temp[1][5] = p[0]*p[1]*p[2]+2*p[6]*p[0]*p[1]*p[2]*p[4]*d;
+    temp[1][6] = p[0]*p[1]*p[2]-p[0]*p[3]*p[4]+p[1]*p[2]*p[4]+2*p[5]*p[0]*p[1]*p[2]*p[4]*d;
+
+    temp[2][0] = p[5]*p[6]*p[1]*p[2]*p[4];
+    temp[2][1] = p[5]*p[6]*p[0]*p[2]*p[4];
+    temp[2][2] = p[5]*p[6]*p[0]*p[1]*p[4];
+    temp[2][3] = Interval(0,0);
+    temp[2][4] = p[5]*p[6]*p[0]*p[1]*p[2];
+    temp[2][5] = p[6]*p[0]*p[1]*p[2]*p[4];
+    temp[2][6] = p[5]*p[0]*p[1]*p[2]*p[4];
 
     return temp;
 }
@@ -87,14 +105,16 @@ Interval_7D Interval_7D :: b_sub_bc() const
     return temp;
 }
 
-int Interval_7D::judge() const
+int Interval_7D :: judge() const
 {
-    Interval *RT = RouthTable();
+    vector<Interval> RT = RouthTable();
     int positive=0, negtive=0, straddle=0;
     for (int i=0; i<SIZE_RT_F2_1; i++)
     {
-        if (RT[i].get_inf()>=0) positive++;
-        else if (RT[i].get_sup()<=0) negtive++;
+//        if (RT[i].get_inf()>0 || abs(RT[i].get_inf())<RT[i].get_sup()/1e12) positive++;
+//        else if (RT[i].get_sup()<0 || abs(RT[i].get_sup())<-RT[i].get_inf()/1e12) negtive++;
+        if (RT[i].lt_0()) positive++;
+        else if (RT[i].st_0()) negtive++;
         else straddle++;
     }
     if (positive==SIZE_RT_F2_1) return 1;

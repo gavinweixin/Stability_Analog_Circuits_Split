@@ -14,7 +14,7 @@ public:
     Interval& operator *= (const Interval& i);
     bool lt_0 () const;
     bool st_0 () const;
-    bool uncertain() const;
+//    bool uncertain() const;
     double width_cal() const;
     double get_inf() const;
     double get_sup() const;

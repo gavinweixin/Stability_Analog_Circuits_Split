@@ -1,12 +1,11 @@
 #include <Interval_7D.h>
 #include <cmath>
 
-#define findZeroAdded
-
 double newton(Interval_7D ic, int num, bool isInf, bool &found)
 {
     const int MAXITEA = 20;
-    Interval *f, df;
+    vector<Interval> f;
+    Interval df;
     double itr;
 
     ic.set_pi(num, Interval(ic.get_pi(num).get_mid()));
@@ -15,12 +14,11 @@ double newton(Interval_7D ic, int num, bool isInf, bool &found)
     for (int i=0; i<MAXITEA; i++)
     {
         f = ic.RouthTable();
-        df = (ic.J2_cal())[num];
+        df = (ic.Jacobi_cal())[1][num];    //to be modified
         if (isInf)
             itr = ic.get_pi(num).get_mid()-f[1].get_inf()/df.get_inf();
         else
             itr = ic.get_pi(num).get_mid()-f[1].get_sup()/df.get_sup();
-        delete[] f;
         if (abs(itr-ic.get_pi(num).get_mid())<eps)
         {
             found = true;
@@ -38,9 +36,10 @@ bool insideInterval(const Interval &intval, const double &value)
     return ((value-intval.get_inf()>eps) && (intval.get_sup()-value>eps));
 }
 
-double* findZeroF2_1I(const Interval_7D &ic)
+vector<double> findZeroF2_1I(const Interval_7D &ic)
 {
-    double *pos = new double[SIZE_PARM_F2_1];
+    vector<double> pos;
+    pos.resize(SIZE_PARM_F2_1);
     bool found;
 
     for (int i=0; i<SIZE_PARM_F2_1; i++)

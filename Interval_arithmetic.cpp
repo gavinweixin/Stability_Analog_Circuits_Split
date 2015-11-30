@@ -5,9 +5,6 @@
 #include <string>
 #include "Interval_7D.h"
 
-#define SplitMethod_CFBM
-#define Circuit_F2_1
-
 using namespace std;
 
 const double epsilon = 0.0001;
@@ -44,23 +41,28 @@ pair<Interval_7D, Interval_7D> Jacobi (Interval_7D& orig)
     double max_df = 0;
     int max_j = 0;
     double d;
-    vector<Interval> df2;
+    vector<Interval> RT = orig.RouthTable();
+    vector< vector<Interval> > df2;
     Interval_7D b_subt_bc = orig.b_sub_bc();
-    df2 = orig.J2_cal();
-    for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
+    df2 = orig.Jacobi_cal();
+    for (int i = 0; i != SIZE_RT_F2_1; ++i)
     {
-        df2[i] = df2[i] * b_subt_bc.get_pi(i);
-        d = max(abs(df2[i].get_inf()), abs(df2[i].get_sup()));
-        if (d > max_df)
+        if (RT[i].lt_0()) continue;
+        for (int j = 0; j != SIZE_PARM_F2_1; ++j)
         {
-            max_df = d;
-            max_j = i;
+            df2[i][j] = df2[i][j] * b_subt_bc.get_pi(j);
+            d = max(abs(df2[i][j].get_inf()), abs(df2[i][j].get_sup()));
+            if (d > max_df)
+            {
+                max_df = d;
+                max_j = j;
+            }
         }
     }
     return Bisect_j(orig,max_j,-1);
 }
 
-double* findZeroF2_1I(const Interval_7D &ic);
+vector<double> findZeroF2_1I(const Interval_7D &ic);
 
 pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
 {
@@ -71,23 +73,22 @@ pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
     double wid_RT[SIZE_RT_F2_1];
     bool zeroFound = false;
 
-    double *pos = findZeroF2_1I(orig);
+    vector<double> pos = findZeroF2_1I(orig);
     for (int i=0; i<SIZE_PARM_F2_1; i++)
         if (pos[i]!=-1)
         {
             zeroFound = true;
         }
 
-    Interval* RT = orig.RouthTable();
+    vector<Interval> RT = orig.RouthTable();
     for (int i=0; i<SIZE_RT_F2_1; i++)
     {
         wid_RT[i] = RT[i].width_cal();
         if (RT[i].lt_0()) filter[i] = true;
     }
-    delete[] RT;
 
     pair<Interval_7D, Interval_7D> children;
-    Interval *RT_left, *RT_right;
+    vector<Interval> RT_left, RT_right;
     for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
     {
         if (zeroFound && pos[i]==-1) continue;
@@ -101,8 +102,6 @@ pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
                 tmp += RT_left[j].width_cal()  / wid_RT[j];
                 tmp += RT_right[j].width_cal() / wid_RT[j];
             }
-        delete[] RT_left;
-        delete[] RT_right;
         if (tmp < min_v)
         {
             min_v = tmp;
@@ -110,7 +109,6 @@ pair<Interval_7D, Interval_7D> CFBM (Interval_7D& orig)
             min_pos = pos[i];
         }
     }
-    delete[] pos;
     fout << min_i+1 << endl;
     return Bisect_j(orig,min_i,min_pos);
 }

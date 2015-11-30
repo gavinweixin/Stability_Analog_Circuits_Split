@@ -1,5 +1,6 @@
 #include "Interval.h"
 #include <iostream>
+#include <cmath>
 
 Interval :: Interval () : inf(0), sup(0) { }
 
@@ -99,18 +100,18 @@ Interval& Interval :: operator *= (const Interval& i)
 
 bool Interval :: lt_0 () const
 {
-    return (inf>0);
+    return (inf>0 || fabs(inf)<sup/1e12);
 }
 
 bool Interval :: st_0 () const
 {
-    return (sup<0);
+    return (sup<0 || fabs(sup)<-inf/1e12);
 }
 
-bool Interval :: uncertain() const
-{
-    return (inf<=0 && sup>=0);
-}
+//bool Interval :: uncertain() const
+//{
+//    return (inf<=0 && sup>=0);
+//}
 
 double Interval :: width_cal() const
 {
