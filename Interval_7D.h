@@ -10,7 +10,7 @@ const int SIZE_RT_F2_1 = 3;
 const double SHIFTD = 0;    //change the shift distance of imag axis here
 #define Circuit_F2_1
 #define SplitMethod_CFBM
-#define findZeroAdded
+//#define findZeroAdded
 
 class Interval_7D
 {

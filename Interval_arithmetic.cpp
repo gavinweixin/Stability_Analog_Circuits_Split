@@ -1,8 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
-#include <vector>
 #include <string>
+#include <cmath>
 #include "Interval_7D.h"
 
 using namespace std;
@@ -10,16 +10,6 @@ using namespace std;
 const double epsilon = 0.0001;
 double V;
 ofstream fout("axis");
-
-inline double abs(double i)
-{
-    return i > 0 ? i : -i;
-}
-
-inline double max(double m1, double m2)
-{
-    return m1 > m2 ? m1 : m2;
-}
 
 pair<Interval_7D, Interval_7D> Bisect_j (Interval_7D& orig, int j, double pos)
 {
@@ -51,7 +41,7 @@ pair<Interval_7D, Interval_7D> Jacobi (Interval_7D& orig)
         for (int j = 0; j != SIZE_PARM_F2_1; ++j)
         {
             df2[i][j] = df2[i][j] * b_subt_bc.get_pi(j);
-            d = max(abs(df2[i][j].get_inf()), abs(df2[i][j].get_sup()));
+            d = max(fabs(df2[i][j].get_inf()), fabs(df2[i][j].get_sup()));
             if (d > max_df)
             {
                 max_df = d;
