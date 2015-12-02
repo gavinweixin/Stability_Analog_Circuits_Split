@@ -3,12 +3,12 @@ CONFIG += console
 CONFIG -= qt
 
 SOURCES += \
-    Inverval_7D.cpp \
     Interval_arithmetic.cpp \
-    Interval.cpp \
-    findZero.cpp
+    findZero.cpp \
+    Circuit_F2_1.cpp \
+    main.cpp
 
 HEADERS += \
-    Interval_7D.h \
-    Interval.h
+    Interval.h \
+    Circuit_F2_1.h
 

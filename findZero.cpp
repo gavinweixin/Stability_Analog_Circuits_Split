@@ -1,25 +1,25 @@
-#include <Interval_7D.h>
+#include <Circuit_F2_1.h>
 #include <cmath>
 
-double newton(Interval_7D ic, int num, bool isInf, bool &found)
+double newton(Circuit_F2_1 ic, int num, bool isInf, bool &found)
 {
     const int MAXITEA = 20;
     vector<Interval> f;
     Interval df;
     double itr;
 
-    ic.set_pi(num, Interval(ic.get_pi(num).get_mid()));
-    double eps = ic.get_pi(num).get_mid()/10000;  //set the accuracy
+    ic.set_pi(num, Interval(median(ic.get_pi(num))));
+    double eps = median(ic.get_pi(num))/10000;  //set the accuracy
     found = false;
     for (int i=0; i<MAXITEA; i++)
     {
         f = ic.RouthTable();
         df = (ic.Jacobi_cal())[1][num];    //to be modified
         if (isInf)
-            itr = ic.get_pi(num).get_mid()-f[1].get_inf()/df.get_inf();
+            itr = median(ic.get_pi(num))-f[1].lower()/df.lower();
         else
-            itr = ic.get_pi(num).get_mid()-f[1].get_sup()/df.get_sup();
-        if (abs(itr-ic.get_pi(num).get_mid())<eps)
+            itr = median(ic.get_pi(num))-f[1].upper()/df.upper();
+        if (abs(itr-median(ic.get_pi(num)))<eps)
         {
             found = true;
             break;
@@ -29,14 +29,15 @@ double newton(Interval_7D ic, int num, bool isInf, bool &found)
     return itr;
 }
 
-//terminals of interval not included
+//bounds of interval not included
 bool insideInterval(const Interval &intval, const double &value)
 {
-    double eps = intval.get_mid()/10000;
-    return ((value-intval.get_inf()>eps) && (intval.get_sup()-value>eps));
+//    double eps = median(intval)/10000;
+    double eps = width(intval)/10;  //to be modified
+    return ((value-intval.lower()>eps) && (intval.upper()-value>eps));
 }
 
-vector<double> findZeroF2_1I(const Interval_7D &ic)
+vector<double> findZeroF2_1I(const Circuit_F2_1 &ic)
 {
     vector<double> pos;
     pos.resize(SIZE_PARM_F2_1);
@@ -45,10 +46,11 @@ vector<double> findZeroF2_1I(const Interval_7D &ic)
     for (int i=0; i<SIZE_PARM_F2_1; i++)
     {
         pos[i] = newton(ic, i, true, found);
-        if (!found || !insideInterval(ic.get_pi(i), pos[i]))
+        if (!found || !insideInterval(ic.get_pi(i), pos[i])/*in(pos[i], ic.get_pi(i))*/)
         {
             pos[i] = newton(ic, i, false, found);
-            if (!found || !insideInterval(ic.get_pi(i), pos[i])) pos[i] = -1;
+            if (!found || !insideInterval(ic.get_pi(i), pos[i])/*in(pos[i], ic.get_pi(i))*/)
+                pos[i] = -1;
         }
     }
     return pos;
