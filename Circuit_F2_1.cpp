@@ -17,7 +17,6 @@ Circuit_F2_1& Circuit_F2_1 :: operator = (const Circuit_F2_1& i)
 double Circuit_F2_1 :: volume_cal() const
 {
     return (width(p[0]) * width(p[1]) * width(p[2]) * width(p[3]) * width(p[4]) * width(p[5]) * width(p[6]));
-
 }
 
 vector<Interval> Circuit_F2_1 :: coef_cal(double d) const
@@ -90,7 +89,7 @@ Circuit_F2_1 Circuit_F2_1 :: b_sub_bc() const
     vector<Interval> temp_v;
     Circuit_F2_1 temp;
 
-    for (int i = 0; i != 7; ++ i)
+    for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
     {
         temp_v.push_back(p[i]-median(p[i]));
     }
@@ -109,10 +108,10 @@ int Circuit_F2_1 :: judge() const
         using namespace boost::numeric::interval_lib::compare::certain;
         for (int i=0; i<SIZE_RT_F2_1; i++)
         {
-//        if (RT[i].get_inf()>0 || abs(RT[i].get_inf())<RT[i].get_sup()/1e12) positive++;
-//        else if (RT[i].get_sup()<0 || abs(RT[i].get_sup())<-RT[i].get_inf()/1e12) negtive++;
-            if (RT[i] > 0.) positive++;
-            else if (RT[i] < 0.) negtive++;
+            if (RT[i].lower()>0 || abs(RT[i].lower())<RT[i].upper()/1e12) positive++;
+            else if (RT[i].upper()<0 || abs(RT[i].upper())<-RT[i].lower()/1e12) negtive++;
+//            if (RT[i] > 0.) positive++;
+//            else if (RT[i] < 0.) negtive++;
             else straddle++;
         }
     }

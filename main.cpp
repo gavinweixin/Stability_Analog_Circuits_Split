@@ -7,7 +7,7 @@
 
 using namespace std;
 
-const double epsilon = 1e-4;
+static const double epsilon = 1e-4;
 double V;
 ofstream fout("axis");
 
@@ -160,21 +160,21 @@ void cubePrint(vector<Circuit_F2_1> &s, vector<Circuit_F2_1> &us, vector<Circuit
     cout << "stable:" << endl;
     for (vector<Circuit_F2_1>::iterator ivec = s.begin(); ivec != s.end(); ++ ivec)
     {
-        for (int i = 0; i != 7; ++ i)
+        for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
             cout << "[" << (*ivec).get_pi(i).lower() << "," << (*ivec).get_pi(i).upper() << "]" << "\t";
         cout << endl;
     }
     cout << "unstable:" << endl;
     for (vector<Circuit_F2_1>::iterator ivec = us.begin(); ivec != us.end(); ++ ivec)
     {
-        for (int i = 0; i != 7; ++ i)
+        for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
            cout << "[" << (*ivec).get_pi(i).lower() << "," << (*ivec).get_pi(i).upper() << "]" << "\t";
         cout << endl;
     }
     cout << "uncertain:" << endl;
     for (vector<Circuit_F2_1>::iterator ivec = uc.begin(); ivec != uc.end(); ++ ivec)
     {
-        for (int i = 0; i != 7; ++ i)
+        for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
             cout << "[" << (*ivec).get_pi(i).lower() << "," << (*ivec).get_pi(i).upper() << "]" << "\t";
         cout << endl;
     }
@@ -182,14 +182,20 @@ void cubePrint(vector<Circuit_F2_1> &s, vector<Circuit_F2_1> &us, vector<Circuit
 
 int main()
 {
+    cout << "Split Method:\t";
     #ifdef SplitMethod_CFBM
-    cout << "Split Method:\t" << "CFBM" << endl;
+        #ifdef findZeroAdded
+        cout << "CFBM with findZero" << endl;
+        #else
+        cout << "CFBM" << endl;
+        #endif
     #elif defined SplitMethod_Jacobi
-    cout << "Split Method:\t" << "Jacobi" << endl;
+        cout << "Jacobi" << endl;
     #endif
 
+    cout << "Circuit:\t\t";
     #ifdef IC_F2_1
-    cout << "Circuit:\t\t" << "F2_1" << endl;
+        cout << "F2_1" << endl;
     #endif
 
     vector<Circuit_F2_1> stable;
@@ -201,6 +207,18 @@ int main()
     Judge(p,stable,unstable,uncertain);
 
     cout << "#Cube\t" << stable.size() << "\t" << unstable.size() << "\t" << uncertain.size() << endl;
+
+//    vector<size_t> ratio(10, 0);
+//    double vol = 0.;
+//    for (vector<Circuit_F2_1>::iterator ivec = stable.begin(); ivec != stable.end(); ++ ivec)
+//    {
+//        ratio[(ivec->volume_cal()/V)*10000]++;
+//        if (ivec->volume_cal()/V > 1e-3)
+//            vol += ivec->volume_cal()/V;
+//    }
+//    for (size_t i=0; i<10; i++)
+//        cout << i/100. << "% ~ " << (i+1)/100. << "%:\t" << ratio[i] << endl;
+//    cout << "sum of vol which is larger than 0.1%: " << vol*100 << "%" << endl;
 
     double vol_stable=0, vol_unstable=0, vol_uncertain=0;
     for (size_t i=0; i<stable.size();    i++) vol_stable    += stable[i].volume_cal();

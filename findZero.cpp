@@ -32,8 +32,8 @@ double newton(Circuit_F2_1 ic, int num, bool isInf, bool &found)
 //bounds of interval not included
 bool insideInterval(const Interval &intval, const double &value)
 {
-//    double eps = median(intval)/10000;
-    double eps = width(intval)/10;  //to be modified
+    double eps = median(intval)/10000;
+//    double eps = width(intval)/10;  //to be modified
     return ((value-intval.lower()>eps) && (intval.upper()-value>eps));
 }
 
@@ -55,4 +55,3 @@ vector<double> findZeroF2_1I(const Circuit_F2_1 &ic)
     }
     return pos;
 }
-
