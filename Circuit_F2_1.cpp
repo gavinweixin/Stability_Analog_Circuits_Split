@@ -1,6 +1,9 @@
 #include "Circuit_F2_1.h"
 
-Circuit_F2_1 :: Circuit_F2_1() { }
+Circuit_F2_1 :: Circuit_F2_1()
+{
+    p.resize(SIZE_PARM_F2_1);
+}
 
 Circuit_F2_1 :: Circuit_F2_1(const Circuit_F2_1 &orig) : p(orig.p) { }
 
@@ -44,7 +47,7 @@ vector< vector<Interval> > Circuit_F2_1 :: Jacobi_cal(double d) const
 {
     vector< vector<Interval> > temp;
     temp.resize(SIZE_RT_F2_1);
-    for (int i=0; i<SIZE_RT_F2_1; i++)
+    for (size_t i=0; i<SIZE_RT_F2_1; i++)
         temp[i].resize(SIZE_PARM_F2_1);
 
     temp[0][0] = p[5]*p[6]*p[1]*p[2]*p[4]*d*d+(p[5]*p[1]*p[2]+p[6]*p[1]*p[2]-p[6]*p[3]*p[4])*d+p[2];
@@ -89,7 +92,7 @@ Circuit_F2_1 Circuit_F2_1 :: b_sub_bc() const
     vector<Interval> temp_v;
     Circuit_F2_1 temp;
 
-    for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
+    for (size_t i = 0; i != SIZE_PARM_F2_1; ++ i)
     {
         temp_v.push_back(p[i]-median(p[i]));
     }
@@ -102,11 +105,11 @@ Circuit_F2_1 Circuit_F2_1 :: b_sub_bc() const
 int Circuit_F2_1 :: judge() const
 {
     vector<Interval> RT = RouthTable();
-    int positive=0, negtive=0, straddle=0;
+    size_t positive=0, negtive=0, straddle=0;
 
     {
         using namespace boost::numeric::interval_lib::compare::certain;
-        for (int i=0; i<SIZE_RT_F2_1; i++)
+        for (size_t i=0; i<SIZE_RT_F2_1; i++)
         {
             if (RT[i].lower()>0 || abs(RT[i].lower())<RT[i].upper()/1e12) positive++;
             else if (RT[i].upper()<0 || abs(RT[i].upper())<-RT[i].lower()/1e12) negtive++;

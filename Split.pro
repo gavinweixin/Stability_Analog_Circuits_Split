@@ -3,9 +3,9 @@ CONFIG += console
 CONFIG -= qt
 
 SOURCES += \
-    findZero.cpp \
     Circuit_F2_1.cpp \
-    main.cpp
+    main.cpp \
+    findZeroAll.cpp
 
 HEADERS += \
     Circuit_F2_1.h
