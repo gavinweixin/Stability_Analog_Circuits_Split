@@ -1,0 +1,41 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Bisect_j	main.cpp	/^pair<Circuit_F2_1, Circuit_F2_1> Bisect_j (Circuit_F2_1& orig, int j, double pos)$/;"	f
+CFBM	main.cpp	/^pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)$/;"	f
+Circuit_F2_1	Circuit_F2_1.cpp	/^Circuit_F2_1 :: Circuit_F2_1() { }$/;"	f	class:Circuit_F2_1
+Circuit_F2_1	Circuit_F2_1.cpp	/^Circuit_F2_1 :: Circuit_F2_1(const Circuit_F2_1 &orig) : p(orig.p) { }$/;"	f	class:Circuit_F2_1
+Circuit_F2_1	Circuit_F2_1.cpp	/^Circuit_F2_1 :: Circuit_F2_1(const vector<Interval>& orig) : p(orig) { }$/;"	f	class:Circuit_F2_1
+Circuit_F2_1	Circuit_F2_1.h	/^class Circuit_F2_1$/;"	c
+IC_F2_1	Circuit_F2_1.h	14;"	d
+Interval	Circuit_F2_1.h	/^typedef boost::numeric::interval<double> Interval;$/;"	t
+Jacobi	main.cpp	/^pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig)$/;"	f
+Jacobi_cal	Circuit_F2_1.cpp	/^vector< vector<Interval> > Circuit_F2_1 :: Jacobi_cal(double d) const$/;"	f	class:Circuit_F2_1
+Judge	main.cpp	/^void Judge (Circuit_F2_1& parent, vector<Circuit_F2_1>& s, vector<Circuit_F2_1>& us, vector<Circuit_F2_1>& uc)$/;"	f
+RouthTable	Circuit_F2_1.cpp	/^vector<Interval> Circuit_F2_1 :: RouthTable(double d) const$/;"	f	class:Circuit_F2_1
+SHIFTD	Circuit_F2_1.h	/^const double SHIFTD = 0;    \/\/change the shift distance of imag axis here$/;"	v
+SIZE_PARM_F2_1	Circuit_F2_1.h	/^const int SIZE_PARM_F2_1 = 7;$/;"	v
+SIZE_RT_F2_1	Circuit_F2_1.h	/^const int SIZE_RT_F2_1 = 3;$/;"	v
+SplitMethod_CFBM	Circuit_F2_1.h	15;"	d
+V	main.cpp	/^double V;$/;"	v
+_CIRCUIT_F2_1_H_	Circuit_F2_1.h	2;"	d
+b_sub_bc	Circuit_F2_1.cpp	/^Circuit_F2_1 Circuit_F2_1 :: b_sub_bc() const$/;"	f	class:Circuit_F2_1
+coef_cal	Circuit_F2_1.cpp	/^vector<Interval> Circuit_F2_1 :: coef_cal(double d) const$/;"	f	class:Circuit_F2_1
+cubePrint	main.cpp	/^void cubePrint(vector<Circuit_F2_1> &s, vector<Circuit_F2_1> &us, vector<Circuit_F2_1> &uc)$/;"	f
+epsilon	main.cpp	/^static const double epsilon = 1e-4;$/;"	v	file:
+findZeroAdded	Circuit_F2_1.h	16;"	d
+findZeroF2_1All	findZeroAll.cpp	/^vector<double> findZeroF2_1All(const Circuit_F2_1 &ic)$/;"	f
+get_pi	Circuit_F2_1.cpp	/^Interval Circuit_F2_1 :: get_pi(int i) const$/;"	f	class:Circuit_F2_1
+init	main.cpp	/^Circuit_F2_1 init()$/;"	f
+insideInterval	findZeroAll.cpp	/^bool insideInterval(const Interval &intval, const double &value)$/;"	f
+judge	Circuit_F2_1.cpp	/^int Circuit_F2_1 :: judge() const$/;"	f	class:Circuit_F2_1
+main	main.cpp	/^int main()$/;"	f
+newton	findZeroAll.cpp	/^double newton(Circuit_F2_1 ic, int num, bool isInf, bool &found)$/;"	f
+operator =	Circuit_F2_1.cpp	/^Circuit_F2_1& Circuit_F2_1 :: operator = (const Circuit_F2_1& i)$/;"	f	class:Circuit_F2_1
+p	Circuit_F2_1.h	/^    vector<Interval> p;$/;"	m	class:Circuit_F2_1
+set_pi	Circuit_F2_1.cpp	/^void Circuit_F2_1 :: set_pi(int i, const Interval &value)$/;"	f	class:Circuit_F2_1
+volume_cal	Circuit_F2_1.cpp	/^double Circuit_F2_1 :: volume_cal() const$/;"	f	class:Circuit_F2_1
+~Circuit_F2_1	Circuit_F2_1.cpp	/^Circuit_F2_1 :: ~Circuit_F2_1() { }$/;"	f	class:Circuit_F2_1
