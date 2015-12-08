@@ -35,10 +35,10 @@ pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig)
     vector< vector<Interval> > df2;
     Circuit_F2_1 b_subt_bc = orig.b_sub_bc();
     df2 = orig.Jacobi_cal();
-    for (int i = 0; i != SIZE_RT_F2_1; ++i)
+    for (size_t i = 0; i != SIZE_RT_F2_1; ++i)
     {
         if (RT[i] > 0) continue;
-        for (int j = 0; j != SIZE_PARM_F2_1; ++j)
+        for (size_t j = 0; j != SIZE_PARM_F2_1; ++j)
         {
             df2[i][j] = df2[i][j] * b_subt_bc.get_pi(j);
             d = max(fabs(df2[i][j].lower()), fabs(df2[i][j].upper()));
@@ -52,7 +52,7 @@ pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig)
     return Bisect_j(orig,max_j,-1);
 }
 
-vector<double> findZeroF2_1I(const Circuit_F2_1 &ic);
+//vector<double> findZeroF2_1I(const Circuit_F2_1 &ic);
 
 pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
 {
@@ -67,7 +67,7 @@ pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
     #ifdef findZeroAdded
     pos = findZeroF2_1I(orig);
     #endif
-    for (int i=0; i<SIZE_PARM_F2_1; i++)
+    for (size_t i=0; i<SIZE_PARM_F2_1; i++)
         if (pos[i]!=-1)
         {
             zeroFound = true;
@@ -76,7 +76,7 @@ pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
     vector<Interval> RT = orig.RouthTable();
     {
         using namespace boost::numeric::interval_lib::compare::certain;
-        for (int i=0; i<SIZE_RT_F2_1; i++)
+        for (size_t i=0; i<SIZE_RT_F2_1; i++)
         {
             wid_RT[i] = width(RT[i]);
             if (RT[i] > 0.) filter[i] = true;
@@ -84,14 +84,14 @@ pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
     }
     pair<Circuit_F2_1, Circuit_F2_1> children;
     vector<Interval> RT_left, RT_right;
-    for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
+    for (size_t i = 0; i != SIZE_PARM_F2_1; ++ i)
     {
         if (zeroFound && pos[i]==-1) continue;
         children = Bisect_j(orig, i, pos[i]);
         RT_left = children.first.RouthTable();
         RT_right = children.second.RouthTable();
         tmp = 0;
-        for (int j=0; j<SIZE_RT_F2_1; j++)
+        for (size_t j=0; j<SIZE_RT_F2_1; j++)
             if (!filter[j])
             {
                 tmp += width(RT_left[j])  / wid_RT[j];
@@ -160,21 +160,21 @@ void cubePrint(vector<Circuit_F2_1> &s, vector<Circuit_F2_1> &us, vector<Circuit
     cout << "stable:" << endl;
     for (vector<Circuit_F2_1>::iterator ivec = s.begin(); ivec != s.end(); ++ ivec)
     {
-        for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
+        for (size_t i = 0; i != SIZE_PARM_F2_1; ++ i)
             cout << "[" << (*ivec).get_pi(i).lower() << "," << (*ivec).get_pi(i).upper() << "]" << "\t";
         cout << endl;
     }
     cout << "unstable:" << endl;
     for (vector<Circuit_F2_1>::iterator ivec = us.begin(); ivec != us.end(); ++ ivec)
     {
-        for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
+        for (size_t i = 0; i != SIZE_PARM_F2_1; ++ i)
            cout << "[" << (*ivec).get_pi(i).lower() << "," << (*ivec).get_pi(i).upper() << "]" << "\t";
         cout << endl;
     }
     cout << "uncertain:" << endl;
     for (vector<Circuit_F2_1>::iterator ivec = uc.begin(); ivec != uc.end(); ++ ivec)
     {
-        for (int i = 0; i != SIZE_PARM_F2_1; ++ i)
+        for (size_t i = 0; i != SIZE_PARM_F2_1; ++ i)
             cout << "[" << (*ivec).get_pi(i).lower() << "," << (*ivec).get_pi(i).upper() << "]" << "\t";
         cout << endl;
     }

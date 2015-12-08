@@ -3,7 +3,7 @@
 
 double newton(Circuit_F2_1 ic, int num, bool isInf, bool &found)
 {
-    const int MAXITEA = 20;
+    const size_t MAXITEA = 20;
     vector<Interval> f;
     Interval df;
     double itr;
@@ -11,7 +11,7 @@ double newton(Circuit_F2_1 ic, int num, bool isInf, bool &found)
     ic.set_pi(num, Interval(median(ic.get_pi(num))));
     double eps = median(ic.get_pi(num))/10000;  //set the accuracy
     found = false;
-    for (int i=0; i<MAXITEA; i++)
+    for (size_t i=0; i<MAXITEA; i++)
     {
         f = ic.RouthTable();
         df = (ic.Jacobi_cal())[1][num];    //to be modified
@@ -43,7 +43,7 @@ vector<double> findZeroF2_1I(const Circuit_F2_1 &ic)
     pos.resize(SIZE_PARM_F2_1);
     bool found;
 
-    for (int i=0; i<SIZE_PARM_F2_1; i++)
+    for (size_t i=0; i<SIZE_PARM_F2_1; i++)
     {
         pos[i] = newton(ic, i, true, found);
         if (!found || !insideInterval(ic.get_pi(i), pos[i])/*in(pos[i], ic.get_pi(i))*/)
