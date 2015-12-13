@@ -1,5 +1,6 @@
 #include <Circuit_F2_1.h>
-#include <cmath>
+
+// need to be modified to adapt affa
 
 double newton(Circuit_F2_1 ic, int num, bool isInf, bool &found)
 {
@@ -19,7 +20,7 @@ double newton(Circuit_F2_1 ic, int num, bool isInf, bool &found)
             itr = median(ic.get_pi(num))-f[1].lower()/df.lower();
         else
             itr = median(ic.get_pi(num))-f[1].upper()/df.upper();
-        if (abs(itr-median(ic.get_pi(num)))<eps)
+        if (fabs(itr-median(ic.get_pi(num)))<eps)
         {
             found = true;
             break;
@@ -40,10 +41,10 @@ bool insideInterval(const Interval &intval, const double &value)
 vector<double> findZeroF2_1I(const Circuit_F2_1 &ic)
 {
     vector<double> pos;
-    pos.resize(SIZE_PARM_F2_1);
+    pos.resize(ic.SIZE_PARM);
     bool found;
 
-    for (size_t i=0; i<SIZE_PARM_F2_1; i++)
+    for (size_t i=0; i<ic.SIZE_PARM; i++)
     {
         pos[i] = newton(ic, i, true, found);
         if (!found || !insideInterval(ic.get_pi(i), pos[i])/*in(pos[i], ic.get_pi(i))*/)

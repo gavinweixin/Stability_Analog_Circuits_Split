@@ -1,15 +1,6 @@
-#include <iostream>
-#include <fstream>
-#include <iomanip>
-#include <string>
-#include <cmath>
 #include "Circuit_F2_1.h"
 
-using namespace std;
-
-static const double epsilon = 1e-4;
-double V;
-ofstream fout("axis");
+// ofstream fout("axis");
 
 pair<Circuit_F2_1, Circuit_F2_1> Bisect_j (Circuit_F2_1& orig, int j, double pos)
 {
@@ -35,10 +26,10 @@ pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig)
     vector< vector<Interval> > df2;
     Circuit_F2_1 b_subt_bc = orig.b_sub_bc();
     df2 = orig.Jacobi_cal();
-    for (size_t i = 0; i != SIZE_RT_F2_1; ++i)
+    for (size_t i = 0; i != orig.SIZE_RT; ++i)
     {
         if (RT[i] > 0) continue;
-        for (size_t j = 0; j != SIZE_PARM_F2_1; ++j)
+        for (size_t j = 0; j != orig.SIZE_PARM; ++j)
         {
             df2[i][j] = df2[i][j] * b_subt_bc.get_pi(j);
             d = max(fabs(df2[i][j].lower()), fabs(df2[i][j].upper()));
@@ -52,31 +43,29 @@ pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig)
     return Bisect_j(orig,max_j,-1);
 }
 
-//vector<double> findZeroF2_1I(const Circuit_F2_1 &ic);
-
-pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
+pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig, double d)
 {
     //RouthTable here has only one entry
-    double tmp, min_pos, min_v=2*SIZE_RT_F2_1;
+    double tmp, min_pos, min_v=2*orig.SIZE_RT;
     int min_i=0;
-    bool filter[SIZE_RT_F2_1] = {};
-    double wid_RT[SIZE_RT_F2_1];
+    bool filter[orig.SIZE_RT] = {};
+    double wid_RT[orig.SIZE_RT];
     bool zeroFound = false;
 
-    vector<double> pos(SIZE_PARM_F2_1, -1);
+    vector<double> pos(orig.SIZE_PARM, -1);
     #ifdef findZeroAdded
     pos = findZeroF2_1I(orig);
     #endif
-    for (size_t i=0; i<SIZE_PARM_F2_1; i++)
+    for (size_t i=0; i<orig.SIZE_PARM; i++)
         if (pos[i]!=-1)
         {
             zeroFound = true;
         }
 
-    vector<Interval> RT = orig.RouthTable();
+    vector<Interval> RT = orig.RouthTable(d);
     {
         using namespace boost::numeric::interval_lib::compare::certain;
-        for (size_t i=0; i<SIZE_RT_F2_1; i++)
+        for (size_t i=0; i<orig.SIZE_RT; i++)
         {
             wid_RT[i] = width(RT[i]);
             if (RT[i] > 0.) filter[i] = true;
@@ -84,14 +73,14 @@ pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
     }
     pair<Circuit_F2_1, Circuit_F2_1> children;
     vector<Interval> RT_left, RT_right;
-    for (size_t i = 0; i != SIZE_PARM_F2_1; ++ i)
+    for (size_t i = 0; i != orig.SIZE_PARM; ++ i)
     {
         if (zeroFound && pos[i]==-1) continue;
         children = Bisect_j(orig, i, pos[i]);
-        RT_left = children.first.RouthTable();
-        RT_right = children.second.RouthTable();
+        RT_left = children.first.RouthTable(d);
+        RT_right = children.second.RouthTable(d);
         tmp = 0;
-        for (size_t j=0; j<SIZE_RT_F2_1; j++)
+        for (size_t j=0; j<orig.SIZE_RT; j++)
             if (!filter[j])
             {
                 tmp += width(RT_left[j])  / wid_RT[j];
@@ -104,14 +93,14 @@ pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
             min_pos = pos[i];
         }
     }
-    fout << min_i+1 << endl;
+//    fout << min_i+1 << endl;
     return Bisect_j(orig,min_i,min_pos);
 }
 
-void Judge (Circuit_F2_1& parent, vector<Circuit_F2_1>& s, vector<Circuit_F2_1>& us, vector<Circuit_F2_1>& uc)
+void Judge (double totVol, Circuit_F2_1& parent, vector<Circuit_F2_1>& s, vector<Circuit_F2_1>& us, vector<Circuit_F2_1>& uc, double d)
 {
     pair<Circuit_F2_1, Circuit_F2_1> children;
-    int state = parent.judge();
+    int state = parent.judge(d);
     if (state == 1)
     {
         s.push_back(parent);
@@ -122,7 +111,7 @@ void Judge (Circuit_F2_1& parent, vector<Circuit_F2_1>& s, vector<Circuit_F2_1>&
         us.push_back(parent);
         return;
     }
-    else if (parent.volume_cal() / V < epsilon)
+    else if (parent.volume_cal() / totVol < epsilon)
     {
         uc.push_back(parent);
         return;
@@ -130,12 +119,12 @@ void Judge (Circuit_F2_1& parent, vector<Circuit_F2_1>& s, vector<Circuit_F2_1>&
     else
     {
         #ifdef SplitMethod_CFBM
-        children = CFBM(parent);
+        children = CFBM(parent, d);
         #elif defined SplitMethod_Jacobi
         children = Jacobi(parent);
         #endif
-        Judge(children.first,s,us,uc);
-        Judge(children.second,s,us,uc);
+        Judge(totVol,children.first,s,us,uc,d);
+        Judge(totVol,children.second,s,us,uc,d);
     }
 }
 
@@ -153,31 +142,6 @@ Circuit_F2_1 init()
 
     temp = Circuit_F2_1(temp_v);
     return temp;
-}
-
-void cubePrint(vector<Circuit_F2_1> &s, vector<Circuit_F2_1> &us, vector<Circuit_F2_1> &uc)
-{
-    cout << "stable:" << endl;
-    for (vector<Circuit_F2_1>::iterator ivec = s.begin(); ivec != s.end(); ++ ivec)
-    {
-        for (size_t i = 0; i != SIZE_PARM_F2_1; ++ i)
-            cout << "[" << (*ivec).get_pi(i).lower() << "," << (*ivec).get_pi(i).upper() << "]" << "\t";
-        cout << endl;
-    }
-    cout << "unstable:" << endl;
-    for (vector<Circuit_F2_1>::iterator ivec = us.begin(); ivec != us.end(); ++ ivec)
-    {
-        for (size_t i = 0; i != SIZE_PARM_F2_1; ++ i)
-           cout << "[" << (*ivec).get_pi(i).lower() << "," << (*ivec).get_pi(i).upper() << "]" << "\t";
-        cout << endl;
-    }
-    cout << "uncertain:" << endl;
-    for (vector<Circuit_F2_1>::iterator ivec = uc.begin(); ivec != uc.end(); ++ ivec)
-    {
-        for (size_t i = 0; i != SIZE_PARM_F2_1; ++ i)
-            cout << "[" << (*ivec).get_pi(i).lower() << "," << (*ivec).get_pi(i).upper() << "]" << "\t";
-        cout << endl;
-    }
 }
 
 int main()
@@ -198,36 +162,10 @@ int main()
         cout << "F2_1" << endl;
     #endif
 
-    vector<Circuit_F2_1> stable;
-    vector<Circuit_F2_1> unstable;
-    vector<Circuit_F2_1> uncertain;
     Circuit_F2_1 p = init();
+    double totVol = p.volume_cal();
+    normalOut(totVol, p);
 
-    V = p.volume_cal();
-    Judge(p,stable,unstable,uncertain);
-
-    cout << "#Cube\t" << stable.size() << "\t" << unstable.size() << "\t" << uncertain.size() << endl;
-
-//    vector<size_t> ratio(10, 0);
-//    double vol = 0.;
-//    for (vector<Circuit_F2_1>::iterator ivec = stable.begin(); ivec != stable.end(); ++ ivec)
-//    {
-//        ratio[(ivec->volume_cal()/V)*10000]++;
-//        if (ivec->volume_cal()/V > 1e-3)
-//            vol += ivec->volume_cal()/V;
-//    }
-//    for (size_t i=0; i<10; i++)
-//        cout << i/100. << "% ~ " << (i+1)/100. << "%:\t" << ratio[i] << endl;
-//    cout << "sum of vol which is larger than 0.1%: " << vol*100 << "%" << endl;
-
-    double vol_stable=0, vol_unstable=0, vol_uncertain=0;
-    for (size_t i=0; i<stable.size();    i++) vol_stable    += stable[i].volume_cal();
-    for (size_t i=0; i<unstable.size();  i++) vol_unstable  += unstable[i].volume_cal();
-    for (size_t i=0; i<uncertain.size(); i++) vol_uncertain += uncertain[i].volume_cal();
-
-    cout << "Vol%\t";
-    cout << setprecision(6);
-    cout << vol_stable/V*100 << "%\t" << vol_unstable/V*100 << "%\t" << vol_uncertain/V*100 << "%" << endl;
-    fout.close();
+//    fout.close();
     return 0;
 }

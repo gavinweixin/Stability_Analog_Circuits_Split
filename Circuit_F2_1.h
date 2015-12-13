@@ -1,24 +1,14 @@
 #ifndef _CIRCUIT_F2_1_H_
 #define _CIRCUIT_F2_1_H_
 
-#include <vector>
-#include <aa.h>
-#include <boost/numeric/interval.hpp>
-
-typedef boost::numeric::interval<double> Interval;
-
-using namespace std;
-
-const size_t SIZE_PARM_F2_1 = 7;
-const size_t SIZE_RT_F2_1 = 3;
-const double SHIFTD = 0;    //change the shift distance of imag axis here
-#define IC_F2_1
-#define SplitMethod_CFBM
-//#define findZeroAdded
+#include <Circuit.h>
 
 class Circuit_F2_1
 {
 public:
+
+    static const size_t SIZE_PARM = 7;
+    static const size_t SIZE_RT = 3;
     Circuit_F2_1();
     Circuit_F2_1(const Circuit_F2_1& orig);
     Circuit_F2_1(const vector<Interval>& orig);
@@ -31,9 +21,24 @@ public:
     Interval get_pi(int i) const;
     void set_pi(int i, const Interval &value);
     Circuit_F2_1 b_sub_bc() const;
-    int judge() const;
+    int judge(double=SHIFTD) const;
 private:
     vector<Interval> p;
 };
 
+// main algorithm
+pair<Circuit_F2_1, Circuit_F2_1> Bisect_j (Circuit_F2_1& orig, int j, double pos);
+pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig);
+pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig, double d=0);
+void Judge (double,Circuit_F2_1& parent, vector<Circuit_F2_1>& s, vector<Circuit_F2_1>& us, vector<Circuit_F2_1>& uc, double d=0);
+
+// input & output
+Circuit_F2_1 init();
+void normalOut(double, Circuit_F2_1 p);
+void distribution(vector<Circuit_F2_1> &stable);
+void shiftD(double, Circuit_F2_1 p);
+void cubePrint(vector<Circuit_F2_1> &s, vector<Circuit_F2_1> &us, vector<Circuit_F2_1> &uc);
+
+// alternate algo
+vector<double> findZeroF2_1I(const Circuit_F2_1 &ic);
 #endif
