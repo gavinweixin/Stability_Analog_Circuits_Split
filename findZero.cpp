@@ -41,10 +41,10 @@ bool insideInterval(const Interval &intval, const double &value)
 vector<double> findZeroF2_1I(const Circuit_F2_1 &ic)
 {
     vector<double> pos;
-    pos.resize(ic.SIZE_PARM);
+    pos.resize(ic.SIZE_PARM());
     bool found;
 
-    for (size_t i=0; i<ic.SIZE_PARM; i++)
+    for (size_t i=0; i<ic.SIZE_PARM(); i++)
     {
         pos[i] = newton(ic, i, true, found);
         if (!found || !insideInterval(ic.get_pi(i), pos[i])/*in(pos[i], ic.get_pi(i))*/)

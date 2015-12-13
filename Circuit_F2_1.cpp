@@ -1,59 +1,68 @@
 #include "Circuit_F2_1.h"
 
-Circuit_F2_1 :: Circuit_F2_1() { }
+Circuit_F2_1 :: Circuit_F2_1()
+{
+    p.resize(SIZE_PARM());
+}
 
-Circuit_F2_1 :: Circuit_F2_1(const Circuit_F2_1 &orig) : p(orig.p) { }
+Circuit_F2_1 :: Circuit_F2_1(const Circuit_F2_1 &orig) : Circuit(orig) { }
 
-Circuit_F2_1 :: Circuit_F2_1(const vector<Interval>& orig) : p(orig) { }
+Circuit_F2_1 :: Circuit_F2_1(const vector<Interval>& orig) : Circuit(orig) { }
 
 Circuit_F2_1 :: ~Circuit_F2_1() { }
 
-Circuit_F2_1& Circuit_F2_1 :: operator = (const Circuit_F2_1& i)
+Circuit_F2_1& Circuit_F2_1 :: operator = (const Circuit_F2_1& orig)
 {
-    p = i.p;
+    if (this == &orig)
+        return *this;
+    p = orig.p;
     return *this;
 }
 
-double Circuit_F2_1 :: volume_cal() const
+size_t Circuit_F2_1 :: SIZE_PARM() const
 {
-    return (width(p[0]) * width(p[1]) * width(p[2]) * width(p[3]) * width(p[4]) * width(p[5]) * width(p[6]));
+    return SIZE_PARM_F2_1;
 }
 
-vector<Interval> Circuit_F2_1 :: coef_cal(double d) const
+size_t Circuit_F2_1 :: SIZE_RT() const
 {
-    vector<AAF> p(SIZE_PARM);
-    for (size_t i=0; i<SIZE_PARM; i++)
+    return SIZE_RT_F2_1;
+}
+
+vector<Interval> Circuit_F2_1 :: coef_cal() const
+{
+    vector<AAF> p(SIZE_PARM());
+    for (size_t i=0; i<SIZE_PARM(); i++)
         p[i] = interval(this->p[i].lower(),this->p[i].upper());
-    AAF coef_origin[SIZE_RT];
+    AAF coef_origin[SIZE_RT()];
     coef_origin[0] = p[1]*p[2]+p[0]*p[2];
     coef_origin[1] = p[5]*p[0]*p[1]*p[2] + p[6]*p[4]*p[1]*p[2] + p[6]*p[0]*p[1]*p[2] - p[6]*p[0]*p[4]*p[3];
     coef_origin[2] = p[6]*p[5]*p[0]*p[4]*p[1]*p[2];
 
-    AAF coef_shift[SIZE_RT];
-    coef_shift[0] = coef_origin[2]*d*d-coef_origin[1]*d+coef_origin[0];
-    coef_shift[1] = coef_origin[1]-coef_origin[2]*2.*d;
+    AAF coef_shift[SIZE_RT()];
+    coef_shift[0] = coef_origin[2]*shiftDis*shiftDis-coef_origin[1]*shiftDis+coef_origin[0];
+    coef_shift[1] = coef_origin[1]-coef_origin[2]*2.*shiftDis;
     coef_shift[2] = coef_origin[2];
 
-    vector<Interval> coef(SIZE_RT);
-    for (size_t i=0; i<SIZE_RT; i++)
+    vector<Interval> coef(SIZE_RT());
+    for (size_t i=0; i<SIZE_RT(); i++)
         coef[i] = Interval(coef_shift[i].convert().left(),coef_shift[i].convert().right());
-//    coef.resize(SIZE_RT);
 
     return coef;
 }
 
-vector<Interval> Circuit_F2_1 :: RouthTable(double d) const
+vector<Interval> Circuit_F2_1 :: RouthTable() const
 {
-    return coef_cal(d);
+    return coef_cal();
 }
 
-vector< vector<Interval> > Circuit_F2_1 :: Jacobi_cal(double d) const
+vector< vector<Interval> > Circuit_F2_1 :: Jacobi_cal() const
 {
     vector< vector<Interval> > temp;
-    temp.resize(SIZE_RT);
-    for (size_t i=0; i<SIZE_RT; i++)
-        temp[i].resize(SIZE_PARM);
-
+    temp.resize(SIZE_RT());
+    for (size_t i=0; i<SIZE_RT(); i++)
+        temp[i].resize(SIZE_PARM());
+    double d = shiftDis;
     temp[0][0] = p[5]*p[6]*p[1]*p[2]*p[4]*d*d+(p[5]*p[1]*p[2]+p[6]*p[1]*p[2]-p[6]*p[3]*p[4])*d+p[2];
     temp[0][1] = p[5]*p[6]*p[0]*p[2]*p[4]*d*d+(p[5]*p[0]*p[2]+p[6]*p[0]*p[2]+p[6]*p[2]*p[4])*d+p[2];
     temp[0][2] = p[5]*p[6]*p[0]*p[1]*p[4]*d*d+(p[5]*p[0]*p[1]+p[6]*p[0]*p[1]+p[6]*p[1]*p[4])*d+p[0]+p[1];
@@ -79,50 +88,4 @@ vector< vector<Interval> > Circuit_F2_1 :: Jacobi_cal(double d) const
     temp[2][6] = p[5]*p[0]*p[1]*p[2]*p[4];
 
     return temp;
-}
-
-Interval Circuit_F2_1 :: get_pi(int i) const
-{
-    return p[i];
-}
-
-void Circuit_F2_1 :: set_pi(int i, const Interval &value)
-{
-    p[i] = value;
-}
-
-Circuit_F2_1 Circuit_F2_1 :: b_sub_bc() const
-{
-    vector<Interval> temp_v;
-    Circuit_F2_1 temp;
-
-    for (size_t i = 0; i != SIZE_PARM; ++ i)
-    {
-        temp_v.push_back(p[i]-median(p[i]));
-    }
-
-    temp = Circuit_F2_1(temp_v);
-
-    return temp;
-}
-
-int Circuit_F2_1 :: judge(double d) const
-{
-    vector<Interval> RT = RouthTable(d);
-    size_t positive=0, negtive=0, straddle=0;
-
-    {
-        using namespace boost::numeric::interval_lib::compare::certain;
-        for (size_t i=0; i<SIZE_RT; i++)
-        {
-//            if (RT[i].lower()>0 || abs(RT[i].lower())<RT[i].upper()/1e12) positive++;
-//            else if (RT[i].upper()<0 || abs(RT[i].upper())<-RT[i].lower()/1e12) negtive++;
-            if (RT[i] > 0.) positive++;
-            else if (RT[i] < 0.) negtive++;
-            else straddle++;
-        }
-    }
-    if (positive==SIZE_RT) return 1;
-    else if (negtive==SIZE_RT) return -1;
-    else return 0;
 }
