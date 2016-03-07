@@ -13,8 +13,8 @@ double newton(Circuit_F2_1 ic, int num, bool isInf, bool &found)
     found = false;
     for (int i=0; i<MAXITEA; i++)
     {
-        f = ic.RouthTable();
-        df = (ic.Jacobi_cal())[1][num];    //to be modified
+        f = ic.RouthTable(0);
+        df = (ic.Jacobi_cal(0))[1][num];    //to be modified
         if (isInf)
             itr = median(ic.get_pi(num))-f[1].lower()/df.lower();
         else

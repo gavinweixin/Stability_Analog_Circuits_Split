@@ -99,9 +99,9 @@ Circuit_F2_1 Circuit_F2_1 :: b_sub_bc() const
     return temp;
 }
 
-int Circuit_F2_1 :: judge() const
+int Circuit_F2_1 :: judge(double d) const
 {
-    vector<Interval> RT = RouthTable();
+    vector<Interval> RT = RouthTable(d);
     int positive=0, negtive=0, straddle=0;
 
     {

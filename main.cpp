@@ -9,7 +9,7 @@ using namespace std;
 
 static const double epsilon = 1e-4;
 double V;
-ofstream fout("axis");
+//ofstream fout("axis");
 
 pair<Circuit_F2_1, Circuit_F2_1> Bisect_j (Circuit_F2_1& orig, int j, double pos)
 {
@@ -26,15 +26,15 @@ pair<Circuit_F2_1, Circuit_F2_1> Bisect_j (Circuit_F2_1& orig, int j, double pos
     return temp;
 }
 
-pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig)
+pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig, double shiftd)
 {
     double max_df = 0;
     int max_j = 0;
     double d;
-    vector<Interval> RT = orig.RouthTable();
+    vector<Interval> RT = orig.RouthTable(shiftd);
     vector< vector<Interval> > df2;
     Circuit_F2_1 b_subt_bc = orig.b_sub_bc();
-    df2 = orig.Jacobi_cal();
+    df2 = orig.Jacobi_cal(shiftd);
     for (int i = 0; i != SIZE_RT_F2_1; ++i)
     {
         if (RT[i] > 0) continue;
@@ -54,7 +54,7 @@ pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig)
 
 vector<double> findZeroF2_1I(const Circuit_F2_1 &ic);
 
-pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
+pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig, double d)
 {
     //RouthTable here has only one entry
     double tmp, min_pos, min_v=2*SIZE_RT_F2_1;
@@ -73,7 +73,7 @@ pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
             zeroFound = true;
         }
 
-    vector<Interval> RT = orig.RouthTable();
+    vector<Interval> RT = orig.RouthTable(d);
     {
         using namespace boost::numeric::interval_lib::compare::certain;
         for (int i=0; i<SIZE_RT_F2_1; i++)
@@ -88,8 +88,8 @@ pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
     {
         if (zeroFound && pos[i]==-1) continue;
         children = Bisect_j(orig, i, pos[i]);
-        RT_left = children.first.RouthTable();
-        RT_right = children.second.RouthTable();
+        RT_left = children.first.RouthTable(d);
+        RT_right = children.second.RouthTable(d);
         tmp = 0;
         for (int j=0; j<SIZE_RT_F2_1; j++)
             if (!filter[j])
@@ -104,14 +104,14 @@ pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig)
             min_pos = pos[i];
         }
     }
-    fout << min_i+1 << endl;
+//    fout << min_i+1 << endl;
     return Bisect_j(orig,min_i,min_pos);
 }
 
-void Judge (Circuit_F2_1& parent, vector<Circuit_F2_1>& s, vector<Circuit_F2_1>& us, vector<Circuit_F2_1>& uc)
+void Judge (Circuit_F2_1& parent, double d, vector<Circuit_F2_1>& s, vector<Circuit_F2_1>& us, vector<Circuit_F2_1>& uc)
 {
     pair<Circuit_F2_1, Circuit_F2_1> children;
-    int state = parent.judge();
+    int state = parent.judge(d);
     if (state == 1)
     {
         s.push_back(parent);
@@ -130,12 +130,12 @@ void Judge (Circuit_F2_1& parent, vector<Circuit_F2_1>& s, vector<Circuit_F2_1>&
     else
     {
         #ifdef SplitMethod_CFBM
-        children = CFBM(parent);
+        children = CFBM(parent,d);
         #elif defined SplitMethod_Jacobi
-        children = Jacobi(parent);
+        children = Jacobi(parent,d);
         #endif
-        Judge(children.first,s,us,uc);
-        Judge(children.second,s,us,uc);
+        Judge(children.first,d,s,us,uc);
+        Judge(children.second,d,s,us,uc);
     }
 }
 
@@ -204,9 +204,15 @@ int main()
     Circuit_F2_1 p = init();
 
     V = p.volume_cal();
-    Judge(p,stable,unstable,uncertain);
 
-    cout << "#Cube\t" << stable.size() << "\t" << unstable.size() << "\t" << uncertain.size() << endl;
+    for (double d=0; d<2001; d+=100)
+    {
+        stable.clear();
+        unstable.clear();
+        uncertain.clear();
+        Judge(p,d,stable,unstable,uncertain);
+
+//    cout << "#Cube\t" << stable.size() << "\t" << unstable.size() << "\t" << uncertain.size() << endl;
 
 //    vector<size_t> ratio(10, 0);
 //    double vol = 0.;
@@ -225,9 +231,11 @@ int main()
     for (size_t i=0; i<unstable.size();  i++) vol_unstable  += unstable[i].volume_cal();
     for (size_t i=0; i<uncertain.size(); i++) vol_uncertain += uncertain[i].volume_cal();
 
-    cout << "Vol%\t";
+//    cout << d << "\t";
     cout << setprecision(6);
-    cout << vol_stable/V*100 << "%\t" << vol_unstable/V*100 << "%\t" << vol_uncertain/V*100 << "%" << endl;
-    fout.close();
+    cout << vol_stable/V << ",";
+//    cout << vol_stable/V*100 << "%\t" << vol_unstable/V*100 << "%\t" << vol_uncertain/V*100 << "%" << endl;
+//    fout.close();
+    }
     return 0;
 }

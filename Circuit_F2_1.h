@@ -24,13 +24,13 @@ public:
     ~Circuit_F2_1();
     Circuit_F2_1& operator = (const Circuit_F2_1& i);
     double volume_cal () const;
-    vector<Interval> coef_cal(double=SHIFTD) const;
-    vector<Interval> RouthTable(double=SHIFTD) const;
-    vector< vector<Interval> > Jacobi_cal(double=SHIFTD) const;
+    vector<Interval> coef_cal(double/*=SHIFTD*/) const;
+    vector<Interval> RouthTable(double/*=SHIFTD*/) const;
+    vector< vector<Interval> > Jacobi_cal(double/*=SHIFTD*/) const;
     Interval get_pi(int i) const;
     void set_pi(int i, const Interval &value);
     Circuit_F2_1 b_sub_bc() const;
-    int judge() const;
+    int judge(double=SHIFTD) const;
 private:
     vector<Interval> p;
 };
