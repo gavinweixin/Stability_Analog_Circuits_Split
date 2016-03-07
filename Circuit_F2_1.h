@@ -7,8 +7,8 @@ class Circuit_F2_1
 {
 public:
 
-    static const size_t SIZE_PARM = 7;
-    static const size_t SIZE_RT = 3;
+    static const size_t SIZE_PARM = 5;
+    static const size_t SIZE_RT = 1;
     Circuit_F2_1();
     Circuit_F2_1(const Circuit_F2_1& orig);
     Circuit_F2_1(const vector<Interval>& orig);

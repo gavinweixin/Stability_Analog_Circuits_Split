@@ -132,13 +132,11 @@ Circuit_F2_1 init()
 {
     vector<Interval> temp_v;
     Circuit_F2_1 temp;
-    temp_v.push_back(Interval(10.00e+3*0.85, 10.00e+3*1.15));
-    temp_v.push_back(Interval(10.00e+3*0.85, 10.00e+3*1.15));
-    temp_v.push_back(Interval(10.00e+3*0.85, 10.00e+3*1.15));
-    temp_v.push_back(Interval(588.1e+3*0.85, 588.1e+3*1.15));
-    temp_v.push_back(Interval(245.4   *0.85, 245.4   *1.15));
-    temp_v.push_back(Interval(90.87e-9*0.85, 90.87e-9*1.15));
-    temp_v.push_back(Interval(90.07e-9*0.85, 90.07e-9*1.15));
+    temp_v.push_back(Interval(1e+3*0.85, 1e+3*1.15));
+    temp_v.push_back(Interval(19e+3*0.85, 19e+3*1.15));
+    temp_v.push_back(Interval(1600e-12*0.85, 1600e-12*1.15));
+    temp_v.push_back(Interval(2.5133e+7*1.2*0.85, 2.5133e+7*1.2*1.15));
+    temp_v.push_back(Interval(1e4*0.85, 1e4*1.15));
 
     temp = Circuit_F2_1(temp_v);
     return temp;

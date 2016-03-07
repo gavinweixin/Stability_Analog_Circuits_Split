@@ -16,29 +16,24 @@ Circuit_F2_1& Circuit_F2_1 :: operator = (const Circuit_F2_1& i)
 
 double Circuit_F2_1 :: volume_cal() const
 {
-    return (width(p[0]) * width(p[1]) * width(p[2]) * width(p[3]) * width(p[4]) * width(p[5]) * width(p[6]));
+    return (width(p[0]) * width(p[1]) * width(p[2]) * width(p[3]) * width(p[4]));
 }
 
 vector<Interval> Circuit_F2_1 :: coef_cal(double d) const
 {
-    vector<AAF> p(SIZE_PARM);
-    for (size_t i=0; i<SIZE_PARM; i++)
-        p[i] = interval(this->p[i].lower(),this->p[i].upper());
-    AAF coef_origin[SIZE_RT];
-    coef_origin[0] = p[1]*p[2]+p[0]*p[2];
-    coef_origin[1] = p[5]*p[0]*p[1]*p[2] + p[6]*p[4]*p[1]*p[2] + p[6]*p[0]*p[1]*p[2] - p[6]*p[0]*p[4]*p[3];
-    coef_origin[2] = p[6]*p[5]*p[0]*p[4]*p[1]*p[2];
+//    vector<AAF> p(SIZE_PARM);
+//    for (size_t i=0; i<SIZE_PARM; i++)
+//        p[i] = interval(this->p[i].lower(),this->p[i].upper());
+//    AAF coef_origin[SIZE_RT];
+//    coef_origin[0] = p[0]*p[0]*p[2]*p[3]-2*(p[0]+p[1]);
 
-    AAF coef_shift[SIZE_RT];
-    coef_shift[0] = coef_origin[2]*d*d-coef_origin[1]*d+coef_origin[0];
-    coef_shift[1] = coef_origin[1]-coef_origin[2]*2.*d;
-    coef_shift[2] = coef_origin[2];
+//    AAF coef_shift[SIZE_RT];
+//    coef_shift[0] = coef_origin[0]; //to be modified
 
     vector<Interval> coef(SIZE_RT);
-    for (size_t i=0; i<SIZE_RT; i++)
-        coef[i] = Interval(coef_shift[i].convert().left(),coef_shift[i].convert().right());
-//    coef.resize(SIZE_RT);
-
+//    for (size_t i=0; i<SIZE_RT; i++)
+//        coef[i] = Interval(coef_shift[i].convert().left(),coef_shift[i].convert().right());
+coef[0] = p[0]*p[0]*p[2]*p[3]-2.*(p[0]+p[1]);
     return coef;
 }
 
@@ -54,29 +49,29 @@ vector< vector<Interval> > Circuit_F2_1 :: Jacobi_cal(double d) const
     for (size_t i=0; i<SIZE_RT; i++)
         temp[i].resize(SIZE_PARM);
 
-    temp[0][0] = p[5]*p[6]*p[1]*p[2]*p[4]*d*d+(p[5]*p[1]*p[2]+p[6]*p[1]*p[2]-p[6]*p[3]*p[4])*d+p[2];
-    temp[0][1] = p[5]*p[6]*p[0]*p[2]*p[4]*d*d+(p[5]*p[0]*p[2]+p[6]*p[0]*p[2]+p[6]*p[2]*p[4])*d+p[2];
-    temp[0][2] = p[5]*p[6]*p[0]*p[1]*p[4]*d*d+(p[5]*p[0]*p[1]+p[6]*p[0]*p[1]+p[6]*p[1]*p[4])*d+p[0]+p[1];
-    temp[0][3] = 0.-p[6]*p[0]*p[4]*d;
-    temp[0][4] = p[5]*p[6]*p[0]*p[1]*p[2]*d*d+(p[6]*p[1]*p[2]-p[6]*p[0]*p[3])*d;
-    temp[0][5] = p[6]*p[0]*p[1]*p[2]*p[4]*d*d+p[0]*p[1]*p[2]*d;
-    temp[0][6] = p[5]*p[0]*p[1]*p[2]*p[4]*d*d+(p[0]*p[1]*p[2]-p[0]*p[3]*p[4]+p[1]*p[2]*p[4])*d;
+//    temp[0][0] = p[5]*p[6]*p[1]*p[2]*p[4]*d*d+(p[5]*p[1]*p[2]+p[6]*p[1]*p[2]-p[6]*p[3]*p[4])*d+p[2];
+//    temp[0][1] = p[5]*p[6]*p[0]*p[2]*p[4]*d*d+(p[5]*p[0]*p[2]+p[6]*p[0]*p[2]+p[6]*p[2]*p[4])*d+p[2];
+//    temp[0][2] = p[5]*p[6]*p[0]*p[1]*p[4]*d*d+(p[5]*p[0]*p[1]+p[6]*p[0]*p[1]+p[6]*p[1]*p[4])*d+p[0]+p[1];
+//    temp[0][3] = 0.-p[6]*p[0]*p[4]*d;
+//    temp[0][4] = p[5]*p[6]*p[0]*p[1]*p[2]*d*d+(p[6]*p[1]*p[2]-p[6]*p[0]*p[3])*d;
+//    temp[0][5] = p[6]*p[0]*p[1]*p[2]*p[4]*d*d+p[0]*p[1]*p[2]*d;
+//    temp[0][6] = p[5]*p[0]*p[1]*p[2]*p[4]*d*d+(p[0]*p[1]*p[2]-p[0]*p[3]*p[4]+p[1]*p[2]*p[4])*d;
 
-    temp[1][0] = p[5]*p[1]*p[2]+p[6]*p[1]*p[2]-p[6]*p[3]*p[4]+2.*p[5]*p[6]*p[1]*p[2]*p[4]*d;
-    temp[1][1] = p[5]*p[0]*p[2]+p[6]*p[0]*p[2]+p[6]*p[2]*p[4]+2.*p[5]*p[6]*p[0]*p[2]*p[4]*d;
-    temp[1][2] = p[5]*p[0]*p[1]+p[6]*p[0]*p[1]+p[6]*p[1]*p[4]+2.*p[5]*p[6]*p[0]*p[1]*p[4]*d;
-    temp[1][3] = 0.-p[6]*p[0]*p[4];
-    temp[1][4] = p[6]*p[1]*p[2]-p[6]*p[0]*p[3]+2.*p[5]*p[6]*p[0]*p[1]*p[2]*d;
-    temp[1][5] = p[0]*p[1]*p[2]+2.*p[6]*p[0]*p[1]*p[2]*p[4]*d;
-    temp[1][6] = p[0]*p[1]*p[2]-p[0]*p[3]*p[4]+p[1]*p[2]*p[4]+2.*p[5]*p[0]*p[1]*p[2]*p[4]*d;
+//    temp[1][0] = p[5]*p[1]*p[2]+p[6]*p[1]*p[2]-p[6]*p[3]*p[4]+2.*p[5]*p[6]*p[1]*p[2]*p[4]*d;
+//    temp[1][1] = p[5]*p[0]*p[2]+p[6]*p[0]*p[2]+p[6]*p[2]*p[4]+2.*p[5]*p[6]*p[0]*p[2]*p[4]*d;
+//    temp[1][2] = p[5]*p[0]*p[1]+p[6]*p[0]*p[1]+p[6]*p[1]*p[4]+2.*p[5]*p[6]*p[0]*p[1]*p[4]*d;
+//    temp[1][3] = 0.-p[6]*p[0]*p[4];
+//    temp[1][4] = p[6]*p[1]*p[2]-p[6]*p[0]*p[3]+2.*p[5]*p[6]*p[0]*p[1]*p[2]*d;
+//    temp[1][5] = p[0]*p[1]*p[2]+2.*p[6]*p[0]*p[1]*p[2]*p[4]*d;
+//    temp[1][6] = p[0]*p[1]*p[2]-p[0]*p[3]*p[4]+p[1]*p[2]*p[4]+2.*p[5]*p[0]*p[1]*p[2]*p[4]*d;
 
-    temp[2][0] = p[5]*p[6]*p[1]*p[2]*p[4];
-    temp[2][1] = p[5]*p[6]*p[0]*p[2]*p[4];
-    temp[2][2] = p[5]*p[6]*p[0]*p[1]*p[4];
-    temp[2][3] = 0.;
-    temp[2][4] = p[5]*p[6]*p[0]*p[1]*p[2];
-    temp[2][5] = p[6]*p[0]*p[1]*p[2]*p[4];
-    temp[2][6] = p[5]*p[0]*p[1]*p[2]*p[4];
+//    temp[2][0] = p[5]*p[6]*p[1]*p[2]*p[4];
+//    temp[2][1] = p[5]*p[6]*p[0]*p[2]*p[4];
+//    temp[2][2] = p[5]*p[6]*p[0]*p[1]*p[4];
+//    temp[2][3] = 0.;
+//    temp[2][4] = p[5]*p[6]*p[0]*p[1]*p[2];
+//    temp[2][5] = p[6]*p[0]*p[1]*p[2]*p[4];
+//    temp[2][6] = p[5]*p[0]*p[1]*p[2]*p[4];
 
     return temp;
 }
