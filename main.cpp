@@ -205,7 +205,7 @@ int main()
 
     V = p.volume_cal();
 
-    for (double d=0; d<2001; d+=100)
+    for (double d=0; d<2101; d+=100)
     {
         stable.clear();
         unstable.clear();
