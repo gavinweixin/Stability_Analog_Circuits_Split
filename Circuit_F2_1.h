@@ -27,11 +27,12 @@ public:
     double volume_cal () const;
     vector<Interval> coef_cal(double) const;
     vector<Interval> RouthTable(double) const;
+    vector<Interval> RouthTableSim(double) const;
     vector< vector<Interval> > Jacobi_cal(double) const;
     Interval get_pi(int i) const;
     void set_pi(int i, const Interval &value);
     Circuit_F2_1 b_sub_bc() const;
-    int judge(double) const;
+    int judge(double, bool=true) const;
 private:
     vector<Interval> p;
 };

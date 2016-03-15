@@ -60,6 +60,22 @@ vector<Interval> Circuit_F2_1 :: coef_cal(double d) const
     return coef;
 }
 
+vector<Interval> Circuit_F2_1 :: RouthTableSim(double d) const
+{
+    Interval coef_origin[SIZE_RT_F2_1];
+    coef_origin[0] = p[1]*p[2]+p[0]*p[2];
+    coef_origin[1] = p[5]*p[0]*p[1]*p[2] + p[6]*p[4]*p[1]*p[2] + p[6]*p[0]*p[1]*p[2] - p[6]*p[0]*p[4]*p[3];
+    coef_origin[2] = p[6]*p[5]*p[0]*p[4]*p[1]*p[2];
+
+    vector<Interval> coef;
+    coef.resize(SIZE_RT_F2_1);
+    coef[0] = coef_origin[2]*d*d-coef_origin[1]*d+coef_origin[0];
+    coef[1] = coef_origin[1]-coef_origin[2]*2.*d;
+    coef[2] = coef_origin[2];
+
+    return coef;
+}
+
 vector<Interval> Circuit_F2_1 :: RouthTable(double d) const
 {
     return coef_cal(d);
@@ -124,9 +140,14 @@ Circuit_F2_1 Circuit_F2_1 :: b_sub_bc() const
     return temp;
 }
 
-int Circuit_F2_1 :: judge(double d) const
+int Circuit_F2_1 :: judge(double d, bool isIntval) const
 {
-    vector<Interval> RT = RouthTable(d);
+    vector<Interval> RT;
+    if (isIntval)
+        RT = RouthTable(d);
+    else
+        RT = RouthTableSim(d);
+
     int positive=0, negtive=0, straddle=0;
 
     {

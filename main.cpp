@@ -153,6 +153,41 @@ Circuit_F2_1 init()
     return temp;
 }
 
+bool cubeTest(Circuit_F2_1 cube, double d, size_t pos)
+{
+    if (pos == SIZE_PARM_F2_1)
+    {
+        if (cube.judge(d, false))
+            return true;
+        else
+            return false;
+    }
+    Interval tmp = cube.get_pi(pos);
+    bool test;
+    cube.set_pi(pos, Interval(tmp.lower()));
+    test = cubeTest(cube, d, pos+1);
+    cube.set_pi(pos, Interval(tmp.upper()));
+    test = test && cubeTest(cube, d, pos+1);
+
+    return test;
+}
+
+void stableVerify(vector<Circuit_F2_1> &stable, double d)
+{
+    bool verified = true;
+
+    for (vector<Circuit_F2_1>::iterator ivec = stable.begin(); ivec != stable.end(); ++ ivec)
+        if (!cubeTest(*ivec, d, 0))
+        {
+            verified = false;
+            break;
+        }
+    if (!verified)
+        cout << "Fail!" << endl;
+    else
+        cout << "Pass." <<endl;
+}
+
 void cubePrint(vector<Circuit_F2_1> &s, vector<Circuit_F2_1> &us, vector<Circuit_F2_1> &uc)
 {
     cout << "stable:" << endl;
@@ -203,7 +238,7 @@ int main()
 
     V = p.volume_cal();
 
-    for (double d=0; d<2101; d+=100)
+    for (double d=0; d<1; d+=100)
     {
         stable.clear();
         unstable.clear();
@@ -234,6 +269,7 @@ int main()
     cout << vol_stable/V << ",";
 //    cout << vol_stable/V*100 << "%\t" << vol_unstable/V*100 << "%\t" << vol_uncertain/V*100 << "%" << endl;
 //    fout.close();
+    stableVerify(stable, d);
     }
     return 0;
 }
