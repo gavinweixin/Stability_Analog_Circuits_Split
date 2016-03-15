@@ -15,4 +15,4 @@ HEADERS += \
 
 LIBS += -L/export/home/weixin/lib -laffa
 
-INCLUDEPATH += /export/home/weixin/Desktop/libaffa-0.9.6/src
+INCLUDEPATH += /export/home/weixin/include

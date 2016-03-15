@@ -2,7 +2,7 @@
 #define CIRCUIT_H
 
 #include <vector>
-#include <aa.h>
+#include <aa/aa.h>
 #include <boost/numeric/interval.hpp>
 
 typedef boost::numeric::interval<double> Interval;
