@@ -1,5 +1,5 @@
-#include <Circuit_F2_1.h>
 #include <cmath>
+#include "Circuit_F2_1.h"
 
 double newton(Circuit_F2_1 ic, int num, bool isInf, bool &found)
 {

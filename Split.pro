@@ -3,6 +3,7 @@ CONFIG += console
 CONFIG -= qt
 
 SOURCES += \
+    recursiveTaylor.cpp \
     findZero.cpp \
     Circuit_F2_1.cpp \
     main.cpp
@@ -10,3 +11,6 @@ SOURCES += \
 HEADERS += \
     Circuit_F2_1.h
 
+LIBS += -L/export/home/weixin/lib -lginac -lcln
+
+INCLUDEPATH += /export/home/weixin/include

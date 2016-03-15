@@ -52,8 +52,6 @@ pair<Circuit_F2_1, Circuit_F2_1> Jacobi (Circuit_F2_1& orig, double shiftd)
     return Bisect_j(orig,max_j,-1);
 }
 
-vector<double> findZeroF2_1I(const Circuit_F2_1 &ic);
-
 pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig, double d)
 {
     //RouthTable here has only one entry
@@ -66,12 +64,12 @@ pair<Circuit_F2_1, Circuit_F2_1> CFBM (Circuit_F2_1& orig, double d)
     vector<double> pos(SIZE_PARM_F2_1, -1);
     #ifdef findZeroAdded
     pos = findZeroF2_1I(orig);
-    #endif
     for (int i=0; i<SIZE_PARM_F2_1; i++)
         if (pos[i]!=-1)
         {
             zeroFound = true;
         }
+    #endif
 
     vector<Interval> RT = orig.RouthTable(d);
     {
