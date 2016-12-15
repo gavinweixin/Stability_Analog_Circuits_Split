@@ -39,17 +39,17 @@ vector<Interval> Circuit_F2_1 :: coef_cal(double d) const
     coef_origin[1] = bound(a1, sym, p);
     coef_origin[2] = bound(a2, sym, p);
 
-    Interval coef_tmp[SIZE_RT_F2_1];
-    coef_tmp[0] = p[1]*p[2]+p[0]*p[2];
-    coef_tmp[1] = p[5]*p[0]*p[1]*p[2] + p[6]*p[4]*p[1]*p[2] + p[6]*p[0]*p[1]*p[2] - p[6]*p[0]*p[4]*p[3];
-    coef_tmp[2] = p[6]*p[5]*p[0]*p[4]*p[1]*p[2];
-    for (int i=0; i<SIZE_RT_F2_1; i++)
-    {
-        if (coef_tmp[i].lower()>coef_origin[i].lower())
-            coef_origin[i].assign(coef_tmp[i].lower(), coef_origin[i].upper());
-        if (coef_tmp[i].upper()<coef_origin[i].upper())
-            coef_origin[i].assign(coef_origin[i].lower(), coef_tmp[i].upper());
-    }
+//    Interval coef_tmp[SIZE_RT_F2_1];
+//    coef_tmp[0] = p[1]*p[2]+p[0]*p[2];
+//    coef_tmp[1] = p[5]*p[0]*p[1]*p[2] + p[6]*p[4]*p[1]*p[2] + p[6]*p[0]*p[1]*p[2] - p[6]*p[0]*p[4]*p[3];
+//    coef_tmp[2] = p[6]*p[5]*p[0]*p[4]*p[1]*p[2];
+//    for (int i=0; i<SIZE_RT_F2_1; i++)
+//    {
+//        if (coef_tmp[i].lower()>coef_origin[i].lower())
+//            coef_origin[i].assign(coef_tmp[i].lower(), coef_origin[i].upper());
+//        if (coef_tmp[i].upper()<coef_origin[i].upper())
+//            coef_origin[i].assign(coef_origin[i].lower(), coef_tmp[i].upper());
+//    }
 
     vector<Interval> coef;
     coef.resize(SIZE_RT_F2_1);

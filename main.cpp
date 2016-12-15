@@ -238,8 +238,9 @@ int main()
 
     V = p.volume_cal();
 
-    for (double d=0; d<1; d+=100)
+    for (double d=2200; d<4000; d+=100)
     {
+        cout << d << endl;
         stable.clear();
         unstable.clear();
         uncertain.clear();
@@ -266,10 +267,11 @@ int main()
 
 //    cout << d << "\t";
     cout << setprecision(6);
-    cout << vol_stable/V << ",";
+    cout << vol_stable/V << "," << endl;
 //    cout << vol_stable/V*100 << "%\t" << vol_unstable/V*100 << "%\t" << vol_uncertain/V*100 << "%" << endl;
 //    fout.close();
-    stableVerify(stable, d);
+
+//    stableVerify(stable, d);
     }
     return 0;
 }
